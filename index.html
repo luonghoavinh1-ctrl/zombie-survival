@@ -1,0 +1,3565 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Zombie Survival Online</title>
+
+<style>
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
+  user-select:none;
+}
+
+html,body{
+  margin:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:#05070b;
+  font-family:Arial,sans-serif;
+  touch-action:none;
+}
+
+canvas{
+  display:block;
+  width:100%;
+  height:100%;
+}
+
+#loading{
+  position:fixed;
+  inset:0;
+  z-index:1000;
+  background:#05070b;
+  color:white;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  font-weight:bold;
+}
+
+#loading small{
+  opacity:.6;
+  margin-top:10px;
+}
+
+.panel{
+  position:fixed;
+  z-index:200;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  width:min(92vw,420px);
+  padding:22px;
+  border-radius:22px;
+  background:rgba(5,9,16,.94);
+  border:1px solid rgba(255,255,255,.12);
+  box-shadow:0 20px 80px rgba(0,0,0,.7);
+  color:white;
+}
+
+.panel h1{
+  margin:0 0 5px;
+  text-align:center;
+  font-size:27px;
+}
+
+.panel .sub{
+  text-align:center;
+  opacity:.65;
+  margin-bottom:20px;
+}
+
+input{
+  width:100%;
+  padding:14px;
+  margin:6px 0;
+  border-radius:12px;
+  border:1px solid #39404b;
+  background:#10151e;
+  color:white;
+  outline:none;
+  font-size:16px;
+}
+
+button{
+  width:100%;
+  padding:14px;
+  margin-top:9px;
+  border:0;
+  border-radius:12px;
+  background:#1769ff;
+  color:white;
+  font-size:16px;
+  font-weight:bold;
+}
+
+button:active{
+  transform:scale(.97);
+}
+
+.secondary{
+  background:#202733;
+}
+
+.hidden{
+  display:none!important;
+}
+
+#hud{
+  position:fixed;
+  z-index:20;
+  inset:0;
+  pointer-events:none;
+  color:white;
+}
+
+#topbar{
+  position:absolute;
+  top:10px;
+  left:10px;
+  right:10px;
+  display:flex;
+  justify-content:space-between;
+  gap:8px;
+}
+
+.hudbox{
+  background:rgba(0,0,0,.48);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:12px;
+  padding:8px 11px;
+  backdrop-filter:blur(5px);
+  font-size:13px;
+}
+
+#leftInfo{
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+}
+
+#rightInfo{
+  text-align:right;
+}
+
+#mission{
+  position:absolute;
+  left:50%;
+  top:13px;
+  transform:translateX(-50%);
+  min-width:190px;
+  text-align:center;
+}
+
+#crosshair{
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:25px;
+  height:25px;
+  transform:translate(-50%,-50%);
+}
+
+#crosshair:before,
+#crosshair:after{
+  content:"";
+  position:absolute;
+  background:#fff;
+  box-shadow:0 0 4px #000;
+}
+
+#crosshair:before{
+  width:3px;
+  height:25px;
+  left:11px;
+  top:0;
+}
+
+#crosshair:after{
+  width:25px;
+  height:3px;
+  left:0;
+  top:11px;
+}
+
+#crosshair.locked:before,
+#crosshair.locked:after{
+  background:#ff2020;
+}
+
+#crosshair.locked{
+  transform:translate(-50%,-50%) scale(1.25);
+}
+
+#ammo{
+  position:absolute;
+  right:18px;
+  bottom:22px;
+  font-size:25px;
+  font-weight:bold;
+  text-shadow:0 2px 5px #000;
+}
+
+#weapon{
+  position:absolute;
+  right:7%;
+  bottom:2%;
+  font-size:45px;
+  transform:rotate(-12deg);
+  filter:drop-shadow(0 4px 5px #000);
+}
+
+#hpWrap{
+  position:absolute;
+  left:18px;
+  bottom:23px;
+  width:180px;
+}
+
+#hpText{
+  font-size:13px;
+  margin-bottom:4px;
+  text-shadow:0 2px 4px #000;
+}
+
+#hpBar{
+  height:13px;
+  border-radius:20px;
+  background:#30343a;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.3);
+}
+
+#hpFill{
+  height:100%;
+  width:100%;
+  background:#29e05b;
+  transition:.2s;
+}
+
+#joystick{
+  position:absolute;
+  z-index:30;
+  left:22px;
+  bottom:80px;
+  width:125px;
+  height:125px;
+  border-radius:50%;
+  background:rgba(255,255,255,.08);
+  border:2px solid rgba(255,255,255,.2);
+  pointer-events:auto;
+}
+
+#stick{
+  position:absolute;
+  width:55px;
+  height:55px;
+  left:33px;
+  top:33px;
+  border-radius:50%;
+  background:rgba(255,255,255,.28);
+  border:2px solid rgba(255,255,255,.35);
+}
+
+.action{
+  position:absolute;
+  z-index:30;
+  pointer-events:auto;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:bold;
+  box-shadow:0 5px 20px rgba(0,0,0,.4);
+}
+
+#fire{
+  width:82px;
+  height:82px;
+  right:22px;
+  bottom:90px;
+  background:rgba(210,30,30,.75);
+}
+
+#reload{
+  width:60px;
+  height:60px;
+  right:120px;
+  bottom:78px;
+  background:rgba(40,50,65,.85);
+  font-size:12px;
+}
+
+#skill{
+  width:58px;
+  height:58px;
+  right:30px;
+  bottom:180px;
+  background:rgba(120,50,200,.8);
+  font-size:11px;
+}
+
+#menuBtn{
+  position:absolute;
+  pointer-events:auto;
+  right:12px;
+  top:62px;
+  width:46px;
+  height:46px;
+  border-radius:12px;
+  background:rgba(0,0,0,.5);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:22px;
+}
+
+#toast{
+  position:fixed;
+  z-index:500;
+  left:50%;
+  bottom:42%;
+  transform:translateX(-50%);
+  padding:12px 18px;
+  border-radius:12px;
+  background:rgba(0,0,0,.8);
+  color:white;
+  opacity:0;
+  transition:.2s;
+  pointer-events:none;
+}
+
+#toast.show{
+  opacity:1;
+}
+
+#roomPlayers{
+  margin:12px 0;
+  max-height:130px;
+  overflow:auto;
+  background:#0b1018;
+  border-radius:12px;
+  padding:8px;
+}
+
+.playerRow{
+  padding:7px;
+  border-bottom:1px solid rgba(255,255,255,.07);
+  font-size:14px;
+}
+
+#gameover{
+  text-align:center;
+}
+
+.big{
+  font-size:34px;
+  font-weight:bold;
+}
+
+.star{
+  font-size:25px;
+}
+
+@media(max-height:500px){
+  #joystick{
+    bottom:40px;
+  }
+
+  #fire{
+    bottom:45px;
+  }
+
+  #reload{
+    bottom:40px;
+  }
+
+  #skill{
+    bottom:125px;
+  }
+
+  #hpWrap{
+    bottom:8px;
+  }
+
+  #ammo{
+    bottom:8px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div id="loading">
+  <div>ĐANG TẢI ZOMBIE SURVIVAL...</div>
+  <small>3D • ONLINE • MULTIPLAYER</small>
+</div>
+
+<!-- MENU -->
+<div id="menu" class="panel hidden">
+  <h1>🧟 ZOMBIE SURVIVAL</h1>
+  <div class="sub">ONLINE MULTIPLAYER</div>
+
+  <input id="playerName" maxlength="18" placeholder="Tên người chơi">
+
+  <button id="createBtn">🎮 TẠO PHÒNG</button>
+
+  <input id="roomCodeInput"
+         maxlength="6"
+         placeholder="Nhập mã phòng">
+
+  <button id="joinBtn" class="secondary">
+    🔑 VÀO PHÒNG
+  </button>
+
+  <button id="soloBtn" class="secondary">
+    🤖 CHƠI SOLO
+  </button>
+</div>
+
+<!-- ROOM -->
+<div id="roomPanel" class="panel hidden">
+  <h1>🏠 PHÒNG</h1>
+
+  <div style="text-align:center">
+    Mã phòng:
+    <div id="roomCode"
+         style="font-size:34px;font-weight:bold;letter-spacing:7px;margin:8px">
+      ------
+    </div>
+  </div>
+
+  <div id="roomStatus"
+       style="text-align:center;opacity:.7">
+    Đang chờ người chơi...
+  </div>
+
+  <div id="roomPlayers"></div>
+
+  <button id="startBtn">
+    🚀 BẮT ĐẦU
+  </button>
+
+  <button id="leaveRoomBtn" class="secondary">
+    RỜI PHÒNG
+  </button>
+</div>
+
+<!-- GAME OVER -->
+<div id="gameover" class="panel hidden">
+  <h1 id="resultTitle">THUA</h1>
+
+  <div class="big" id="resultScore">0</div>
+
+  <div id="resultInfo"></div>
+
+  <button id="againBtn">
+    🔄 CHƠI LẠI
+  </button>
+
+  <button id="homeBtn" class="secondary">
+    🏠 MENU
+  </button>
+</div>
+
+<div id="toast"></div>
+
+<div id="hud" class="hidden">
+
+  <div id="topbar">
+
+    <div id="leftInfo">
+      <div class="hudbox">
+        ⭐ <span id="stars">1</span>
+      </div>
+
+      <div class="hudbox">
+        🏆 <span id="rank">TÂN BINH</span>
+      </div>
+
+      <div class="hudbox">
+        🧟 <span id="kills">0</span>
+      </div>
+    </div>
+
+    <div id="rightInfo">
+      <div class="hudbox">
+        🌊 WAVE <span id="wave">1</span>
+      </div>
+
+      <div class="hudbox">
+        ⏱️ <span id="timer">180</span>
+      </div>
+    </div>
+
+  </div>
+
+  <div id="mission" class="hudbox">
+    🎯 NHIỆM VỤ
+    <b id="missionText">0 / 10</b>
+  </div>
+
+  <div id="crosshair"></div>
+
+  <div id="hpWrap">
+    <div id="hpText">
+      ❤️ HP <span id="hpNumber">100</span>/100
+    </div>
+
+    <div id="hpBar">
+      <div id="hpFill"></div>
+    </div>
+  </div>
+
+  <div id="ammo">
+    🔫 <span id="ammoNumber">120</span>/120
+  </div>
+
+  <div id="weapon">🔫</div>
+
+  <div id="menuBtn">☰</div>
+
+  <div id="joystick">
+    <div id="stick"></div>
+  </div>
+
+  <div id="fire" class="action">
+    BẮN
+  </div>
+
+  <div id="reload" class="action">
+    NẠP
+  </div>
+
+  <div id="skill" class="action">
+    RAGE
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+/* =========================================================
+   SUPABASE
+========================================================= */
+
+const SUPABASE_URL =
+"https://iluxyjrukvvixrohtawj.supabase.co";
+
+const SUPABASE_PUBLISHABLE_KEY =
+"sb_publishable_omY3B4G7a3LwtiTRLl3aeQ_yqwwp4D1";
+
+const supabase =
+window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_PUBLISHABLE_KEY
+);
+
+/* =========================================================
+   ELEMENTS
+========================================================= */
+
+const loading =
+document.getElementById("loading");
+
+const menu =
+document.getElementById("menu");
+
+const roomPanel =
+document.getElementById("roomPanel");
+
+const gameover =
+document.getElementById("gameover");
+
+const hud =
+document.getElementById("hud");
+
+const playerNameInput =
+document.getElementById("playerName");
+
+const roomCodeInput =
+document.getElementById("roomCodeInput");
+
+const roomCodeEl =
+document.getElementById("roomCode");
+
+const roomPlayersEl =
+document.getElementById("roomPlayers");
+
+const roomStatusEl =
+document.getElementById("roomStatus");
+
+const crosshair =
+document.getElementById("crosshair");
+
+const toast =
+document.getElementById("toast");
+
+const starsEl =
+document.getElementById("stars");
+
+const rankEl =
+document.getElementById("rank");
+
+const killsEl =
+document.getElementById("kills");
+
+const waveEl =
+document.getElementById("wave");
+
+const timerEl =
+document.getElementById("timer");
+
+const missionTextEl =
+document.getElementById("missionText");
+
+const hpNumberEl =
+document.getElementById("hpNumber");
+
+const hpFillEl =
+document.getElementById("hpFill");
+
+const ammoNumberEl =
+document.getElementById("ammoNumber");
+
+/* =========================================================
+   LOCAL DATA
+========================================================= */
+
+let playerId =
+localStorage.getItem("zs_player_id");
+
+if(!playerId){
+  playerId =
+    crypto.randomUUID();
+
+  localStorage.setItem(
+    "zs_player_id",
+    playerId
+  );
+}
+
+let playerName =
+localStorage.getItem("zs_player_name")
+|| "Player";
+
+playerNameInput.value =
+playerName;
+
+let stars =
+parseInt(
+  localStorage.getItem("zs_stars")
+  || "1"
+);
+
+let matchNumber =
+parseInt(
+  localStorage.getItem("zs_match")
+  || "1"
+);
+
+function saveProgress(){
+  localStorage.setItem(
+    "zs_stars",
+    stars
+  );
+
+  localStorage.setItem(
+    "zs_match",
+    matchNumber
+  );
+
+  localStorage.setItem(
+    "zs_player_name",
+    playerName
+  );
+}
+
+/* =========================================================
+   RANK
+========================================================= */
+
+function getRank(s){
+
+  if(s >= 999)
+    return "☠️ SIÊU CAO THỦ";
+
+  if(s >= 800)
+    return "⚡ ĐẠI CAO THỦ";
+
+  if(s >= 600)
+    return "👑 CAO THỦ";
+
+  if(s >= 400)
+    return "🔥 KIM CƯƠNG";
+
+  if(s >= 200)
+    return "💎 BẠCH KIM";
+
+  if(s >= 100)
+    return "🥇 VÀNG";
+
+  if(s >= 50)
+    return "🥈 BẠC";
+
+  if(s >= 10)
+    return "🥉 ĐỒNG";
+
+  return "🪵 TÂN BINH";
+}
+
+function updateRankUI(){
+
+  starsEl.textContent =
+    stars >= 999
+      ? "999+"
+      : stars;
+
+  rankEl.textContent =
+    getRank(stars);
+}
+
+/* =========================================================
+   MISSION
+========================================================= */
+
+function getMissionTarget(match){
+
+  const first = [
+    10,
+    15,
+    20,
+    30,
+    40,
+    50,
+    65,
+    80,
+    100,
+    120
+  ];
+
+  if(match <= 10)
+    return first[match-1];
+
+  if(match <= 20){
+
+    return Math.round(
+      120 +
+      (match-10) *
+      13
+    );
+  }
+
+  if(match <= 50){
+
+    return Math.round(
+      250 +
+      (match-20) *
+      (350/30)
+    );
+  }
+
+  if(match <= 100){
+
+    return Math.round(
+      600 +
+      (match-50) *
+      10
+    );
+  }
+
+  if(match <= 150){
+
+    return Math.round(
+      1100 +
+      (match-100) *
+      10
+    );
+  }
+
+  if(match <= 200){
+
+    return Math.round(
+      1600 +
+      (match-150) *
+      8
+    );
+  }
+
+  return 2000;
+}
+
+/* =========================================================
+   GAME STATE
+========================================================= */
+
+let scene;
+let camera;
+let renderer;
+let clock;
+
+let player;
+let gun;
+
+let zombies = [];
+let remotePlayers = {};
+
+let targetZombie = null;
+
+let hp = 100;
+let ammo = 120;
+let kills = 0;
+let score = 0;
+let wave = 1;
+
+let missionTarget =
+getMissionTarget(matchNumber);
+
+let missionKills = 0;
+
+let timeLeft = 180;
+
+let gameRunning = false;
+let isHost = false;
+
+let currentRoomId = null;
+let currentRoomCode = null;
+
+let roomChannel = null;
+
+let spawnTimer = 0;
+let shootCooldown = 0;
+let reloadTimer = 0;
+
+let rageActive = false;
+let rageTimer = 0;
+
+/* =========================================================
+   AUDIO
+========================================================= */
+
+let audioContext = null;
+
+function audioInit(){
+
+  if(!audioContext){
+
+    audioContext =
+      new (
+        window.AudioContext ||
+        window.webkitAudioContext
+      )();
+  }
+}
+
+function sound(freq,duration,type="square"){
+
+  try{
+
+    audioInit();
+
+    const osc =
+      audioContext.createOscillator();
+
+    const gain =
+      audioContext.createGain();
+
+    osc.type = type;
+
+    osc.frequency.value =
+      freq;
+
+    gain.gain.setValueAtTime(
+      .06,
+      audioContext.currentTime
+    );
+
+    gain.gain.exponentialRampToValueAtTime(
+      .001,
+      audioContext.currentTime +
+      duration
+    );
+
+    osc.connect(gain);
+    gain.connect(audioContext.destination);
+
+    osc.start();
+
+    osc.stop(
+      audioContext.currentTime +
+      duration
+    );
+
+  }catch(e){}
+}
+
+function gunSound(){
+  sound(90,.09,"sawtooth");
+}
+
+function hitSound(){
+  sound(420,.06,"square");
+}
+
+function reloadSound(){
+  sound(180,.2,"triangle");
+}
+
+/* =========================================================
+   THREE.JS
+========================================================= */
+
+function init3D(){
+
+  scene =
+    new THREE.Scene();
+
+  scene.background =
+    new THREE.Color(0x07101c);
+
+  scene.fog =
+    new THREE.FogExp2(
+      0x07101c,
+      .014
+    );
+
+  camera =
+    new THREE.PerspectiveCamera(
+      65,
+      innerWidth/innerHeight,
+      .1,
+      500
+    );
+
+  camera.position.set(
+    0,
+    4,
+    9
+  );
+
+  renderer =
+    new THREE.WebGLRenderer({
+      antialias:false,
+      powerPreference:"high-performance"
+    });
+
+  renderer.setSize(
+    innerWidth,
+    innerHeight
+  );
+
+  renderer.setPixelRatio(
+    Math.min(
+      devicePixelRatio,
+      1.5
+    )
+  );
+
+  renderer.shadowMap.enabled = false;
+
+  document.body.appendChild(
+    renderer.domElement
+  );
+
+  clock =
+    new THREE.Clock();
+
+  createLights();
+  createWorld();
+  createPlayer();
+
+  addEventListener(
+    "resize",
+    resize
+  );
+
+  animate();
+}
+
+/* =========================================================
+   LIGHTS
+========================================================= */
+
+function createLights(){
+
+  const hemi =
+    new THREE.HemisphereLight(
+      0x8aa8ff,
+      0x172015,
+      1.8
+    );
+
+  scene.add(hemi);
+
+  const moon =
+    new THREE.DirectionalLight(
+      0x9bb7ff,
+      1.2
+    );
+
+  moon.position.set(
+    -30,
+    50,
+    20
+  );
+
+  scene.add(moon);
+}
+
+/* =========================================================
+   WORLD
+========================================================= */
+
+function createWorld(){
+
+  const groundMat =
+    new THREE.MeshLambertMaterial({
+      color:0x25352b
+    });
+
+  const ground =
+    new THREE.Mesh(
+      new THREE.PlaneGeometry(
+        220,
+        220
+      ),
+      groundMat
+    );
+
+  ground.rotation.x =
+    -Math.PI/2;
+
+  scene.add(ground);
+
+  /* roads */
+
+  const roadMat =
+    new THREE.MeshLambertMaterial({
+      color:0x20242a
+    });
+
+  const road1 =
+    new THREE.Mesh(
+      new THREE.BoxGeometry(
+        14,
+        .08,
+        220
+      ),
+      roadMat
+    );
+
+  road1.position.y=.02;
+  scene.add(road1);
+
+  const road2 =
+    new THREE.Mesh(
+      new THREE.BoxGeometry(
+        220,
+        .08,
+        12
+      ),
+      roadMat
+    );
+
+  road2.position.y=.025;
+  scene.add(road2);
+
+  /* houses */
+
+  for(let i=0;i<10;i++){
+
+    const x =
+      (i%2===0 ? -1 : 1) *
+      (24 + Math.floor(i/2)*15);
+
+    const z =
+      -65 + (i%5)*32;
+
+    createHouse(
+      x,
+      z
+    );
+  }
+
+  /* trees */
+
+  for(let i=0;i<45;i++){
+
+    let x =
+      (Math.random()-.5)*180;
+
+    let z =
+      (Math.random()-.5)*180;
+
+    if(
+      Math.abs(x)<12 ||
+      Math.abs(z)<10
+    ){
+      i--;
+      continue;
+    }
+
+    createTree(x,z);
+  }
+
+  /* rocks */
+
+  for(let i=0;i<35;i++){
+
+    const x =
+      (Math.random()-.5)*180;
+
+    const z =
+      (Math.random()-.5)*180;
+
+    createRock(x,z);
+  }
+
+  /* lamps */
+
+  for(let i=-9;i<=9;i+=2){
+
+    createLamp(
+      7,
+      i*12
+    );
+
+    createLamp(
+      -7,
+      i*12
+    );
+  }
+}
+
+function createHouse(x,z){
+
+  const group =
+    new THREE.Group();
+
+  const body =
+    new THREE.Mesh(
+      new THREE.BoxGeometry(
+        12,
+        7,
+        10
+      ),
+      new THREE.MeshLambertMaterial({
+        color:
+          0x56606a +
+          Math.floor(
+            Math.random()*20
+          )
+      })
+    );
+
+  body.position.y=3.5;
+  group.add(body);
+
+  const roof =
+    new THREE.Mesh(
+      new THREE.ConeGeometry(
+        8.5,
+        5,
+        4
+      ),
+      new THREE.MeshLambertMaterial({
+        color:0x202832
+      })
+    );
+
+  roof.rotation.y =
+    Math.PI/4;
+
+  roof.position.y=9.5;
+
+  group.add(roof);
+
+  group.position.set(
+    x,
+    0,
+    z
+  );
+
+  scene.add(group);
+}
+
+function createTree(x,z){
+
+  const group =
+    new THREE.Group();
+
+  const trunk =
+    new THREE.Mesh(
+      new THREE.CylinderGeometry(
+        .35,
+        .5,
+        4,
+        7
+      ),
+      new THREE.MeshLambertMaterial({
+        color:0x493327
+      })
+    );
+
+  trunk.position.y=2;
+  group.add(trunk);
+
+  const leaves =
+    new THREE.Mesh(
+      new THREE.SphereGeometry(
+        2.7,
+        7,
+        7
+      ),
+      new THREE.MeshLambertMaterial({
+        color:0x173d25
+      })
+    );
+
+  leaves.position.y=5;
+  group.add(leaves);
+
+  group.position.set(
+    x,
+    0,
+    z
+  );
+
+  scene.add(group);
+}
+
+function createRock(x,z){
+
+  const rock =
+    new THREE.Mesh(
+      new THREE.DodecahedronGeometry(
+        .8 +
+        Math.random()*1.5,
+        0
+      ),
+      new THREE.MeshLambertMaterial({
+        color:0x4a5054
+      })
+    );
+
+  rock.position.set(
+    x,
+    .7,
+    z
+  );
+
+  scene.add(rock);
+}
+
+function createLamp(x,z){
+
+  const pole =
+    new THREE.Mesh(
+      new THREE.CylinderGeometry(
+        .08,
+        .12,
+        5,
+        6
+      ),
+      new THREE.MeshLambertMaterial({
+        color:0x25282b
+      })
+    );
+
+  pole.position.set(
+    x,
+    2.5,
+    z
+  );
+
+  scene.add(pole);
+
+  const lamp =
+    new THREE.Mesh(
+      new THREE.SphereGeometry(
+        .25,
+        8,
+        8
+      ),
+      new THREE.MeshBasicMaterial({
+        color:0xffd98a
+      })
+    );
+
+  lamp.position.set(
+    x,
+    5.2,
+    z
+  );
+
+  scene.add(lamp);
+}
+
+/* =========================================================
+   PLAYER
+========================================================= */
+
+function createPlayer(){
+
+  player =
+    new THREE.Group();
+
+  const body =
+    new THREE.Mesh(
+      new THREE.CapsuleGeometry(
+        .65,
+        1.5,
+        5,
+        8
+      ),
+      new THREE.MeshLambertMaterial({
+        color:0x34485b
+      })
+    );
+
+  body.position.y=1.5;
+
+  player.add(body);
+
+  const head =
+    new THREE.Mesh(
+      new THREE.SphereGeometry(
+        .48,
+        12,
+        12
+      ),
+      new THREE.MeshLambertMaterial({
+        color:0xd7a27b
+      })
+    );
+
+  head.position.y=3;
+
+  player.add(head);
+
+  gun =
+    new THREE.Mesh(
+      new THREE.BoxGeometry(
+        .25,
+        .25,
+        1.8
+      ),
+      new THREE.MeshLambertMaterial({
+        color:0x111317
+      })
+    );
+
+  gun.position.set(
+    .55,
+    2,
+    -.85
+  );
+
+  gun.rotation.x =
+    -.05;
+
+  player.add(gun);
+
+  scene.add(player);
+}
+
+/* =========================================================
+   ZOMBIES
+========================================================= */
+
+function createZombie(){
+
+  const z =
+    new THREE.Group();
+
+  const body =
+    new THREE.Mesh(
+      new THREE.CapsuleGeometry(
+        .6,
+        1.3,
+        5,
+        8
+      ),
+      new THREE.MeshLambertMaterial({
+        color:0x58745a
+      })
+    );
+
+  body.position.y=1.45;
+
+  z.add(body);
+
+  const head =
+    new THREE.Mesh(
+      new THREE.SphereGeometry(
+        .47,
+        10,
+        10
+      ),
+      new THREE.MeshLambertMaterial({
+        color:0x82956e
+      })
+    );
+
+  head.position.y=2.9;
+
+  z.add(head);
+
+  /* health bar */
+
+  const barBg =
+    new THREE.Mesh(
+      new THREE.PlaneGeometry(
+        1.5,
+        .16
+      ),
+      new THREE.MeshBasicMaterial({
+        color:0x300000
+      })
+    );
+
+  barBg.position.y=4;
+
+  z.add(barBg);
+
+  const bar =
+    new THREE.Mesh(
+      new THREE.PlaneGeometry(
+        1.45,
+        .11
+      ),
+      new THREE.MeshBasicMaterial({
+        color:0xff2020
+      })
+    );
+
+  bar.position.y=4;
+
+  bar.position.z=.01;
+
+  z.add(bar);
+
+  const angle =
+    Math.random() *
+    Math.PI*2;
+
+  const distance =
+    20 +
+    Math.random()*35;
+
+  z.position.set(
+    player.position.x +
+    Math.cos(angle)*distance,
+    0,
+    player.position.z +
+    Math.sin(angle)*distance
+  );
+
+  const maxHp =
+    5 +
+    Math.floor(
+      wave/4
+    );
+
+  z.userData = {
+    hp:maxHp,
+    maxHp:maxHp,
+    speed:
+      1.0 +
+      Math.min(
+        wave*.03,
+        2
+      ),
+    bar:bar,
+    dead:false
+  };
+
+  scene.add(z);
+
+  zombies.push(z);
+}
+
+function removeZombie(z){
+
+  scene.remove(z);
+
+  const i =
+    zombies.indexOf(z);
+
+  if(i>=0)
+    zombies.splice(i,1);
+}
+
+/* =========================================================
+   TARGET
+========================================================= */
+
+function findTarget(){
+
+  let best=null;
+  let bestDistance=9999;
+
+  for(const z of zombies){
+
+    if(z.userData.dead)
+      continue;
+
+    const d =
+      player.position.distanceTo(
+        z.position
+      );
+
+    if(
+      d<bestDistance &&
+      d<35
+    ){
+      best=z;
+      bestDistance=d;
+    }
+  }
+
+  return best;
+}
+
+/* =========================================================
+   SHOOT
+========================================================= */
+
+function shoot(){
+
+  if(!gameRunning)
+    return;
+
+  if(
+    reloadTimer>0 ||
+    shootCooldown>0
+  )
+    return;
+
+  if(ammo<=0){
+
+    reload();
+    return;
+  }
+
+  ammo--;
+
+  shootCooldown=.16;
+
+  gunSound();
+
+  targetZombie =
+    findTarget();
+
+  if(!targetZombie){
+
+    updateUI();
+    return;
+  }
+
+  const distance =
+    player.position.distanceTo(
+      targetZombie.position
+    );
+
+  /* damage */
+
+  let damage =
+    rageActive ? 2 : 1;
+
+  const headDistance =
+    Math.abs(
+      player.position.y + 2.8 -
+      targetZombie.position.y
+    );
+
+  const headshot =
+    distance<25 &&
+    headDistance<1.4 &&
+    Math.random()<.28;
+
+  if(headshot){
+
+    damage*=2;
+
+    createHitEffect(
+      targetZombie.position,
+      0xff2222
+    );
+
+  }else{
+
+    createHitEffect(
+      targetZombie.position,
+      0xffff44
+    );
+  }
+
+  targetZombie.userData.hp -=
+    damage;
+
+  targetZombie.userData.bar.scale.x =
+    Math.max(
+      0,
+      targetZombie.userData.hp /
+      targetZombie.userData.maxHp
+    );
+
+  hitSound();
+
+  if(
+    targetZombie.userData.hp<=0
+  ){
+
+    killZombie(
+      targetZombie,
+      headshot
+    );
+  }
+
+  updateUI();
+}
+
+function killZombie(
+  z,
+  headshot=false
+){
+
+  z.userData.dead=true;
+
+  kills++;
+  missionKills++;
+
+  score +=
+    headshot
+      ? 200
+      : 100;
+
+  createHitEffect(
+    z.position,
+    0xff3333
+  );
+
+  setTimeout(()=>{
+    removeZombie(z);
+  },120);
+
+  if(
+    missionKills>=missionTarget
+  ){
+
+    winGame();
+
+    return;
+  }
+
+  if(
+    missionKills%10===0
+  ){
+
+    wave++;
+
+    waveEl.textContent =
+      wave;
+  }
+
+  broadcastKill();
+}
+
+/* =========================================================
+   HIT EFFECT
+========================================================= */
+
+function createHitEffect(
+  position,
+  color
+){
+
+  const mat =
+    new THREE.MeshBasicMaterial({
+      color,
+      transparent:true
+    });
+
+  const mesh =
+    new THREE.Mesh(
+      new THREE.SphereGeometry(
+        .12,
+        6,
+        6
+      ),
+      mat
+    );
+
+  mesh.position.copy(
+    position
+  );
+
+  scene.add(mesh);
+
+  let life=0;
+
+  function tick(){
+
+    life+=.05;
+
+    mesh.scale.multiplyScalar(
+      1.12
+    );
+
+    mat.opacity =
+      1-life;
+
+    if(life<1){
+
+      requestAnimationFrame(
+        tick
+      );
+
+    }else{
+
+      scene.remove(mesh);
+    }
+  }
+
+  tick();
+}
+
+/* =========================================================
+   RELOAD
+========================================================= */
+
+function reload(){
+
+  if(
+    ammo>=120 ||
+    reloadTimer>0
+  )
+    return;
+
+  reloadTimer=1.2;
+
+  reloadSound();
+
+  toastMessage(
+    "🔄 Đang nạp đạn..."
+  );
+}
+
+/* =========================================================
+   RAGE
+========================================================= */
+
+function useRage(){
+
+  if(!gameRunning)
+    return;
+
+  if(rageActive)
+    return;
+
+  rageActive=true;
+  rageTimer=8;
+
+  toastMessage(
+    "🔥 RAGE ACTIVATED!"
+  );
+}
+
+/* =========================================================
+   UPDATE GAME
+========================================================= */
+
+function updateGame(dt){
+
+  if(!gameRunning)
+    return;
+
+  shootCooldown =
+    Math.max(
+      0,
+      shootCooldown-dt
+    );
+
+  if(
+    reloadTimer>0
+  ){
+
+    reloadTimer -= dt;
+
+    if(
+      reloadTimer<=0
+    ){
+
+      ammo=120;
+
+      toastMessage(
+        "🔫 Đã nạp đầy đạn"
+      );
+    }
+  }
+
+  if(rageActive){
+
+    rageTimer-=dt;
+
+    if(rageTimer<=0){
+
+      rageActive=false;
+
+      toastMessage(
+        "Rage kết thúc"
+      );
+    }
+  }
+
+  updatePlayer(dt);
+  updateZombies(dt);
+
+  if(isHost)
+    updateHostNetwork(dt);
+
+  updateRemotePlayers();
+
+  updateCamera();
+
+  targetZombie =
+    findTarget();
+
+  crosshair.classList.toggle(
+    "locked",
+    !!targetZombie
+  );
+
+  updateUI();
+}
+
+/* =========================================================
+   PLAYER MOVEMENT
+========================================================= */
+
+let joyX=0;
+let joyY=0;
+
+let cameraAngle=0;
+
+function updatePlayer(dt){
+
+  const speed =
+    rageActive
+      ? 9
+      : 5;
+
+  const moveX =
+    joyX;
+
+  const moveZ =
+    joyY;
+
+  const forwardX =
+    Math.sin(cameraAngle);
+
+  const forwardZ =
+    Math.cos(cameraAngle);
+
+  const rightX =
+    Math.cos(cameraAngle);
+
+  const rightZ =
+    -Math.sin(cameraAngle);
+
+  player.position.x +=
+    (
+      forwardX*moveZ +
+      rightX*moveX
+    ) *
+    speed *
+    dt;
+
+  player.position.z +=
+    (
+      forwardZ*moveZ +
+      rightZ*moveX
+    ) *
+    speed *
+    dt;
+
+  /* player direction */
+
+  if(
+    Math.abs(moveX)+
+    Math.abs(moveZ)>.1
+  ){
+
+    player.rotation.y =
+      Math.atan2(
+        moveX,
+        moveZ
+      ) +
+      cameraAngle;
+  }
+}
+
+/* =========================================================
+   ZOMBIE AI
+========================================================= */
+
+function updateZombies(dt){
+
+  for(
+    const z of zombies
+  ){
+
+    if(z.userData.dead)
+      continue;
+
+    const dx =
+      player.position.x -
+      z.position.x;
+
+    const dz =
+      player.position.z -
+      z.position.z;
+
+    const distance =
+      Math.sqrt(
+        dx*dx+
+        dz*dz
+      );
+
+    if(distance>.1){
+
+      z.position.x +=
+        dx/distance *
+        z.userData.speed *
+        dt;
+
+      z.position.z +=
+        dz/distance *
+        z.userData.speed *
+        dt;
+
+      z.rotation.y =
+        Math.atan2(
+          dx,
+          dz
+        );
+    }
+
+    /* attack */
+
+    if(distance<1.7){
+
+      if(
+        Math.random()<dt*.7
+      ){
+
+        hp -=
+          8;
+
+        if(hp<=0){
+
+          hp=0;
+
+          loseGame();
+        }
+      }
+    }
+
+    /* health bar faces camera */
+
+    if(z.userData.bar){
+
+      z.userData.bar.parent.rotation.y =
+        camera.rotation.y;
+    }
+  }
+}
+
+/* =========================================================
+   CAMERA
+========================================================= */
+
+function updateCamera(){
+
+  const distance=8;
+
+  const height=4.5;
+
+  camera.position.x =
+    player.position.x -
+    Math.sin(cameraAngle)*
+    distance;
+
+  camera.position.z =
+    player.position.z -
+    Math.cos(cameraAngle)*
+    distance;
+
+  camera.position.y =
+    player.position.y+
+    height;
+
+  camera.lookAt(
+    player.position.x,
+    2,
+    player.position.z
+  );
+}
+
+/* =========================================================
+   REMOTE PLAYERS
+========================================================= */
+
+function createRemotePlayer(data){
+
+  if(remotePlayers[data.player_id])
+    return remotePlayers[data.player_id];
+
+  const p =
+    new THREE.Group();
+
+  const body =
+    new THREE.Mesh(
+      new THREE.CapsuleGeometry(
+        .6,
+        1.4,
+        5,
+        8
+      ),
+      new THREE.MeshLambertMaterial({
+        color:0x3b65ff
+      })
+    );
+
+  body.position.y=1.5;
+
+  p.add(body);
+
+  const head =
+    new THREE.Mesh(
+      new THREE.SphereGeometry(
+        .45,
+        10,
+        10
+      ),
+      new THREE.MeshLambertMaterial({
+        color:0xd6a07b
+      })
+    );
+
+  head.position.y=2.9;
+
+  p.add(head);
+
+  scene.add(p);
+
+  remotePlayers[
+    data.player_id
+  ] = {
+    mesh:p,
+    data:data
+  };
+
+  return remotePlayers[
+    data.player_id
+  ];
+}
+
+function updateRemotePlayers(){
+
+  for(
+    const id in remotePlayers
+  ){
+
+    const rp =
+      remotePlayers[id];
+
+    if(!rp.data)
+      continue;
+
+    rp.mesh.position.lerp(
+      new THREE.Vector3(
+        rp.data.x,
+        rp.data.y,
+        rp.data.z
+      ),
+      .25
+    );
+
+    rp.mesh.rotation.y =
+      rp.data.rotation || 0;
+  }
+}
+
+/* =========================================================
+   NETWORK
+========================================================= */
+
+let networkTimer=0;
+
+function updateHostNetwork(dt){
+
+  networkTimer += dt;
+
+  if(
+    networkTimer<.12
+  )
+    return;
+
+  networkTimer=0;
+
+  broadcastWorld();
+}
+
+async function updateOwnPlayer(){
+
+  if(!currentRoomId)
+    return;
+
+  await supabase
+    .from("room_players")
+    .upsert({
+      room_id:currentRoomId,
+      player_id:playerId,
+      player_name:playerName,
+      x:player.position.x,
+      y:player.position.y,
+      z:player.position.z,
+      rotation:player.rotation.y,
+      hp:hp,
+      kills:kills,
+      score:score,
+      stars:stars,
+      is_alive:hp>0,
+      last_seen:new Date().toISOString()
+    },{
+      onConflict:
+        "room_id,player_id"
+    });
+}
+
+/* =========================================================
+   CREATE ROOM
+========================================================= */
+
+function randomRoomCode(){
+
+  const chars =
+    "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+
+  let code="";
+
+  for(let i=0;i<6;i++){
+
+    code +=
+      chars[
+        Math.floor(
+          Math.random()*
+          chars.length
+        )
+      ];
+  }
+
+  return code;
+}
+
+async function createRoom(){
+
+  playerName =
+    playerNameInput.value.trim()
+    || "Player";
+
+  saveProgress();
+
+  const code =
+    randomRoomCode();
+
+  const {data,error} =
+    await supabase
+      .from("rooms")
+      .insert({
+        room_code:code,
+        host_name:playerName,
+        status:"waiting",
+        mission_target:
+          getMissionTarget(matchNumber),
+        mission_kills:0,
+        wave:1,
+        time_left:180
+      })
+      .select()
+      .single();
+
+  if(error){
+
+    console.error(error);
+
+    toastMessage(
+      "❌ Không tạo được phòng"
+    );
+
+    return;
+  }
+
+  currentRoomId =
+    data.id;
+
+  currentRoomCode =
+    data.room_code;
+
+  isHost=true;
+
+  await joinRoomPlayer();
+
+  openRoom();
+
+  subscribeRoom();
+}
+
+/* =========================================================
+   JOIN ROOM
+========================================================= */
+
+async function joinRoom(){
+
+  playerName =
+    playerNameInput.value.trim()
+    || "Player";
+
+  const code =
+    roomCodeInput.value
+      .trim()
+      .toUpperCase();
+
+  if(code.length!==6){
+
+    toastMessage(
+      "⚠️ Mã phòng phải có 6 ký tự"
+    );
+
+    return;
+  }
+
+  const {data,error} =
+    await supabase
+      .from("rooms")
+      .select("*")
+      .eq("room_code",code)
+      .eq("status","waiting")
+      .maybeSingle();
+
+  if(error || !data){
+
+    toastMessage(
+      "❌ Không tìm thấy phòng"
+    );
+
+    return;
+  }
+
+  const {count} =
+    await supabase
+      .from("room_players")
+      .select(
+        "*",
+        {
+          count:"exact",
+          head:true
+        }
+      )
+      .eq("room_id",data.id);
+
+  if(
+    count>=4
+  ){
+
+    toastMessage(
+      "❌ Phòng đã đủ 4 người"
+    );
+
+    return;
+  }
+
+  currentRoomId =
+    data.id;
+
+  currentRoomCode =
+    data.room_code;
+
+  isHost=false;
+
+  await joinRoomPlayer();
+
+  openRoom();
+
+  subscribeRoom();
+}
+
+/* =========================================================
+   JOIN PLAYER
+========================================================= */
+
+async function joinRoomPlayer(){
+
+  const {error} =
+    await supabase
+      .from("room_players")
+      .upsert({
+        room_id:currentRoomId,
+        player_id:playerId,
+        player_name:playerName,
+        x:0,
+        y:0,
+        z:20,
+        rotation:0,
+        hp:100,
+        kills:0,
+        score:0,
+        stars:stars,
+        is_alive:true
+      },{
+        onConflict:
+          "room_id,player_id"
+      });
+
+  if(error)
+    console.error(error);
+}
+
+/* =========================================================
+   OPEN ROOM
+========================================================= */
+
+async function openRoom(){
+
+  menu.classList.add(
+    "hidden"
+  );
+
+  gameover.classList.add(
+    "hidden"
+  );
+
+  roomPanel.classList.remove(
+    "hidden"
+  );
+
+  roomCodeEl.textContent =
+    currentRoomCode;
+
+  await refreshRoomPlayers();
+}
+
+/* =========================================================
+   REFRESH ROOM
+========================================================= */
+
+async function refreshRoomPlayers(){
+
+  if(!currentRoomId)
+    return;
+
+  const {data,error} =
+    await supabase
+      .from("room_players")
+      .select("*")
+      .eq("room_id",currentRoomId)
+      .order("created_at");
+
+  if(error)
+    return;
+
+  roomPlayersEl.innerHTML="";
+
+  for(
+    const p of data || []
+  ){
+
+    const div =
+      document.createElement(
+        "div"
+      );
+
+    div.className =
+      "playerRow";
+
+    div.textContent =
+      (
+        p.player_id===playerId
+          ? "👑 "
+          : "👤 "
+      ) +
+      p.player_name;
+
+    roomPlayersEl.appendChild(
+      div
+    );
+
+    if(
+      p.player_id!==playerId
+    ){
+
+      createRemotePlayer(p);
+    }
+  }
+
+  roomStatusEl.textContent =
+    `${data.length}/4 người trong phòng`;
+}
+
+/* =========================================================
+   REALTIME
+========================================================= */
+
+function subscribeRoom(){
+
+  if(roomChannel){
+
+    supabase.removeChannel(
+      roomChannel
+    );
+  }
+
+  roomChannel =
+    supabase.channel(
+      "room-"+currentRoomId
+    );
+
+  roomChannel
+    .on(
+      "postgres_changes",
+      {
+        event:"*",
+        schema:"public",
+        table:"room_players",
+        filter:
+          "room_id=eq."+currentRoomId
+      },
+      payload => {
+
+        refreshRoomPlayers();
+
+        if(
+          payload.new &&
+          payload.new.player_id &&
+          payload.new.player_id!==playerId
+        ){
+
+          const rp =
+            createRemotePlayer(
+              payload.new
+            );
+
+          rp.data =
+            payload.new;
+        }
+      }
+    )
+    .on(
+      "postgres_changes",
+      {
+        event:"UPDATE",
+        schema:"public",
+        table:"rooms",
+        filter:
+          "id=eq."+currentRoomId
+      },
+      payload => {
+
+        if(
+          payload.new.status===
+          "playing" &&
+          !gameRunning
+        ){
+
+          startGame();
+        }
+
+        if(
+          payload.new.status===
+          "finished"
+        ){
+
+          gameRunning=false;
+        }
+      }
+    )
+    .on(
+      "broadcast",
+      {
+        event:"world"
+      },
+      payload => {
+
+        if(
+          !isHost &&
+          payload.payload
+        ){
+
+          receiveWorld(
+            payload.payload
+          );
+        }
+      }
+    )
+    .on(
+      "broadcast",
+      {
+        event:"kill"
+      },
+      payload => {
+
+        if(
+          !isHost &&
+          payload.payload
+        ){
+
+          missionKills =
+            Math.max(
+              missionKills,
+              payload.payload.missionKills
+            );
+
+          killsEl.textContent =
+            missionKills;
+        }
+      }
+    )
+    .subscribe();
+}
+
+/* =========================================================
+   BROADCAST WORLD
+========================================================= */
+
+async function broadcastWorld(){
+
+  if(
+    !roomChannel ||
+    !isHost
+  )
+    return;
+
+  const world = {
+
+    zombies:
+      zombies
+        .filter(
+          z => !z.userData.dead
+        )
+        .slice(0,50)
+        .map(
+          z => ({
+            x:z.position.x,
+            z:z.position.z,
+            hp:z.userData.hp,
+            maxHp:z.userData.maxHp
+          })
+        ),
+
+    missionKills,
+    wave,
+    timeLeft
+  };
+
+  await roomChannel.send({
+    type:"broadcast",
+    event:"world",
+    payload:world
+  });
+}
+
+function receiveWorld(data){
+
+  missionKills =
+    data.missionKills;
+
+  wave =
+    data.wave;
+
+  timeLeft =
+    data.timeLeft;
+
+  /*
+   * Đồng bộ zombie đơn giản.
+   * Host là người điều khiển trạng thái chính.
+   */
+
+  if(
+    zombies.length<
+    data.zombies.length
+  ){
+
+    while(
+      zombies.length<
+      data.zombies.length
+    ){
+
+      createZombie();
+    }
+  }
+
+  while(
+    zombies.length>
+    data.zombies.length
+  ){
+
+    removeZombie(
+      zombies[
+        zombies.length-1
+      ]
+    );
+  }
+
+  data.zombies.forEach(
+    (zd,i)=>{
+
+      const z =
+        zombies[i];
+
+      if(!z)
+        return;
+
+      z.position.x =
+        zd.x;
+
+      z.position.z =
+        zd.z;
+
+      z.userData.hp =
+        zd.hp;
+
+      z.userData.maxHp =
+        zd.maxHp;
+
+      z.userData.bar.scale.x =
+        Math.max(
+          0,
+          zd.hp/zd.maxHp
+        );
+    }
+  );
+}
+
+async function broadcastKill(){
+
+  if(
+    !roomChannel
+  )
+    return;
+
+  await roomChannel.send({
+    type:"broadcast",
+    event:"kill",
+    payload:{
+      missionKills
+    }
+  });
+}
+
+/* =========================================================
+   START GAME
+========================================================= */
+
+async function startRoomGame(){
+
+  if(!isHost)
+    return;
+
+  const {error} =
+    await supabase
+      .from("rooms")
+      .update({
+        status:"playing",
+        mission_target:
+          getMissionTarget(matchNumber),
+        mission_kills:0,
+        wave:1,
+        time_left:180
+      })
+      .eq("id",currentRoomId);
+
+  if(error){
+
+    console.error(error);
+
+    toastMessage(
+      "❌ Không bắt đầu được"
+    );
+
+    return;
+  }
+
+  startGame();
+}
+
+/* =========================================================
+   START
+========================================================= */
+
+function startGame(){
+
+  roomPanel.classList.add(
+    "hidden"
+  );
+
+  menu.classList.add(
+    "hidden"
+  );
+
+  gameover.classList.add(
+    "hidden"
+  );
+
+  hud.classList.remove(
+    "hidden"
+  );
+
+  gameRunning=true;
+
+  hp=100;
+  ammo=120;
+  kills=0;
+  score=0;
+  wave=1;
+  missionKills=0;
+
+  missionTarget =
+    getMissionTarget(
+      matchNumber
+    );
+
+  timeLeft=180;
+
+  player.position.set(
+    0,
+    0,
+    20
+  );
+
+  zombies.forEach(
+    z => scene.remove(z)
+  );
+
+  zombies=[];
+
+  for(let i=0;i<6;i++)
+    createZombie();
+
+  updateRankUI();
+  updateUI();
+}
+
+/* =========================================================
+   TIMER
+========================================================= */
+
+let timerAccumulator=0;
+
+function updateTimer(dt){
+
+  if(!gameRunning)
+    return;
+
+  timerAccumulator += dt;
+
+  if(
+    timerAccumulator<1
+  )
+    return;
+
+  timerAccumulator=0;
+
+  timeLeft--;
+
+  if(
+    isHost
+  ){
+
+    supabase
+      .from("rooms")
+      .update({
+        time_left:timeLeft,
+        mission_kills:missionKills,
+        wave:wave
+      })
+      .eq(
+        "id",
+        currentRoomId
+      )
+      .then(()=>{});
+  }
+
+  if(
+    timeLeft<=0
+  ){
+
+    if(
+      missionKills>=missionTarget
+    ){
+
+      winGame();
+
+    }else{
+
+      loseGame();
+    }
+  }
+}
+
+/* =========================================================
+   WIN
+========================================================= */
+
+async function winGame(){
+
+  if(!gameRunning)
+    return;
+
+  gameRunning=false;
+
+  stars++;
+
+  matchNumber++;
+
+  saveProgress();
+
+  updateRankUI();
+
+  if(
+    currentRoomId
+  ){
+
+    await supabase
+      .from("room_players")
+      .update({
+        stars:stars,
+        score:score,
+        kills:kills,
+        hp:hp,
+        is_alive:true
+      })
+      .eq(
+        "room_id",
+        currentRoomId
+      )
+      .eq(
+        "player_id",
+        playerId
+      );
+  }
+
+  saveScore();
+
+  document.getElementById(
+    "resultTitle"
+  ).textContent =
+    "🏆 CHIẾN THẮNG!";
+
+  document.getElementById(
+    "resultScore"
+  ).textContent =
+    "⭐ +1 SAO";
+
+  document.getElementById(
+    "resultInfo"
+  ).innerHTML =
+    `
+      Nhiệm vụ: ${missionKills}/${missionTarget}<br>
+      Rank: <b>${getRank(stars)}</b><br>
+      Tổng sao: <b>${stars>=999?"999+":stars}</b>
+    `;
+
+  gameover.classList.remove(
+    "hidden"
+  );
+
+  hud.classList.add(
+    "hidden"
+  );
+
+  if(
+    isHost &&
+    currentRoomId
+  ){
+
+    await supabase
+      .from("rooms")
+      .update({
+        status:"finished"
+      })
+      .eq(
+        "id",
+        currentRoomId
+      );
+  }
+}
+
+/* =========================================================
+   LOSE
+========================================================= */
+
+async function loseGame(){
+
+  if(!gameRunning)
+    return;
+
+  gameRunning=false;
+
+  document.getElementById(
+    "resultTitle"
+  ).textContent =
+    "💀 THẤT BẠI";
+
+  document.getElementById(
+    "resultScore"
+  ).textContent =
+    score;
+
+  document.getElementById(
+    "resultInfo"
+  ).innerHTML =
+    `
+      Hạ: ${kills}<br>
+      Nhiệm vụ: ${missionKills}/${missionTarget}<br>
+      ⭐ ${stars>=999?"999+":stars}
+    `;
+
+  gameover.classList.remove(
+    "hidden"
+  );
+
+  hud.classList.add(
+    "hidden"
+  );
+}
+
+/* =========================================================
+   SCORE
+========================================================= */
+
+async function saveScore(){
+
+  try{
+
+    await supabase
+      .from("scores")
+      .insert({
+        name:playerName,
+        score:score,
+        kills:kills,
+        wave:wave
+      });
+
+  }catch(e){
+
+    console.log(e);
+  }
+}
+
+/* =========================================================
+   UI
+========================================================= */
+
+function updateUI(){
+
+  starsEl.textContent =
+    stars>=999
+      ? "999+"
+      : stars;
+
+  rankEl.textContent =
+    getRank(stars);
+
+  killsEl.textContent =
+    kills;
+
+  waveEl.textContent =
+    wave;
+
+  timerEl.textContent =
+    Math.max(
+      0,
+      timeLeft
+    );
+
+  missionTextEl.textContent =
+    missionKills +
+    " / " +
+    missionTarget;
+
+  hpNumberEl.textContent =
+    Math.max(
+      0,
+      Math.floor(hp)
+    );
+
+  hpFillEl.style.width =
+    Math.max(
+      0,
+      hp
+    ) +
+    "%";
+
+  ammoNumberEl.textContent =
+    ammo;
+}
+
+/* =========================================================
+   TOAST
+========================================================= */
+
+let toastTimer;
+
+function toastMessage(text){
+
+  toast.textContent =
+    text;
+
+  toast.classList.add(
+    "show"
+  );
+
+  clearTimeout(
+    toastTimer
+  );
+
+  toastTimer =
+    setTimeout(()=>{
+      toast.classList.remove(
+        "show"
+      );
+    },1800);
+}
+
+/* =========================================================
+   JOYSTICK
+========================================================= */
+
+const joystick =
+document.getElementById(
+  "joystick"
+);
+
+const stick =
+document.getElementById(
+  "stick"
+);
+
+let joyTouchId=null;
+
+function joystickMove(
+  clientX,
+  clientY
+){
+
+  const r =
+    joystick.getBoundingClientRect();
+
+  const cx =
+    r.left+r.width/2;
+
+  const cy =
+    r.top+r.height/2;
+
+  let dx =
+    clientX-cx;
+
+  let dy =
+    clientY-cy;
+
+  const max =
+    r.width*.35;
+
+  const len =
+    Math.sqrt(
+      dx*dx+
+      dy*dy
+    );
+
+  if(len>max){
+
+    dx =
+      dx/len*max;
+
+    dy =
+      dy/len*max;
+  }
+
+  stick.style.transform =
+    `translate(${dx}px,${dy}px)`;
+
+  joyX =
+    dx/max;
+
+  /*
+   * Kéo joystick lên = tiến về phía trước.
+   */
+
+  joyY =
+    -dy/max;
+}
+
+joystick.addEventListener(
+  "touchstart",
+  e => {
+
+    e.preventDefault();
+
+    joyTouchId =
+      e.changedTouches[0].identifier;
+
+    const t =
+      e.changedTouches[0];
+
+    joystickMove(
+      t.clientX,
+      t.clientY
+    );
+  },
+  {passive:false}
+);
+
+joystick.addEventListener(
+  "touchmove",
+  e => {
+
+    e.preventDefault();
+
+    for(
+      const t of e.changedTouches
+    ){
+
+      if(
+        t.identifier===
+        joyTouchId
+      ){
+
+        joystickMove(
+          t.clientX,
+          t.clientY
+        );
+      }
+    }
+  },
+  {passive:false}
+);
+
+joystick.addEventListener(
+  "touchend",
+  e => {
+
+    for(
+      const t of e.changedTouches
+    ){
+
+      if(
+        t.identifier===
+        joyTouchId
+      ){
+
+        joyTouchId=null;
+        joyX=0;
+        joyY=0;
+
+        stick.style.transform =
+          "translate(0,0)";
+      }
+    }
+  }
+);
+
+/* =========================================================
+   CAMERA SWIPE
+========================================================= */
+
+let cameraTouchId=null;
+let lastCameraX=0;
+
+rendererReadyCamera();
+
+function rendererReadyCamera(){
+
+  document.addEventListener(
+    "touchstart",
+    e => {
+
+      for(
+        const t of e.changedTouches
+      ){
+
+        if(
+          t.clientX >
+          innerWidth*.45 &&
+          t.clientY <
+          innerHeight*.8
+        ){
+
+          cameraTouchId =
+            t.identifier;
+
+          lastCameraX =
+            t.clientX;
+        }
+      }
+    },
+    {passive:false}
+  );
+
+  document.addEventListener(
+    "touchmove",
+    e => {
+
+      if(
+        cameraTouchId===null
+      )
+        return;
+
+      for(
+        const t of e.changedTouches
+      ){
+
+        if(
+          t.identifier===
+          cameraTouchId
+        ){
+
+          const dx =
+            t.clientX-
+            lastCameraX;
+
+          cameraAngle -=
+            dx*.006;
+
+          lastCameraX =
+            t.clientX;
+        }
+      }
+    },
+    {passive:false}
+  );
+
+  document.addEventListener(
+    "touchend",
+    e => {
+
+      for(
+        const t of e.changedTouches
+      ){
+
+        if(
+          t.identifier===
+          cameraTouchId
+        ){
+
+          cameraTouchId=null;
+        }
+      }
+    }
+  );
+}
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+document
+.getElementById("createBtn")
+.addEventListener(
+  "click",
+  createRoom
+);
+
+document
+.getElementById("joinBtn")
+.addEventListener(
+  "click",
+  joinRoom
+);
+
+document
+.getElementById("soloBtn")
+.addEventListener(
+  "click",
+  () => {
+
+    playerName =
+      playerNameInput.value.trim()
+      || "Player";
+
+    saveProgress();
+
+    currentRoomId=null;
+    currentRoomCode=null;
+    isHost=true;
+
+    startGame();
+  }
+);
+
+document
+.getElementById("startBtn")
+.addEventListener(
+  "click",
+  startRoomGame
+);
+
+document
+.getElementById("leaveRoomBtn")
+.addEventListener(
+  "click",
+  leaveRoom
+);
+
+document
+.getElementById("againBtn")
+.addEventListener(
+  "click",
+  () => {
+
+    gameover.classList.add(
+      "hidden"
+    );
+
+    startGame();
+  }
+);
+
+document
+.getElementById("homeBtn")
+.addEventListener(
+  "click",
+  () => {
+
+    gameover.classList.add(
+      "hidden"
+    );
+
+    menu.classList.remove(
+      "hidden"
+    );
+  }
+);
+
+document
+.getElementById("fire")
+.addEventListener(
+  "touchstart",
+  e => {
+
+    e.preventDefault();
+    shoot();
+  },
+  {passive:false}
+);
+
+document
+.getElementById("fire")
+.addEventListener(
+  "click",
+  shoot
+);
+
+document
+.getElementById("reload")
+.addEventListener(
+  "click",
+  reload
+);
+
+document
+.getElementById("skill")
+.addEventListener(
+  "click",
+  useRage
+);
+
+document
+.getElementById("menuBtn")
+.addEventListener(
+  "click",
+  () => {
+
+    if(gameRunning){
+
+      gameRunning=false;
+
+      hud.classList.add(
+        "hidden"
+      );
+
+      menu.classList.remove(
+        "hidden"
+      );
+    }
+  }
+);
+
+/* =========================================================
+   LEAVE ROOM
+========================================================= */
+
+async function leaveRoom(){
+
+  gameRunning=false;
+
+  if(roomChannel){
+
+    await supabase
+      .removeChannel(
+        roomChannel
+      );
+
+    roomChannel=null;
+  }
+
+  if(currentRoomId){
+
+    await supabase
+      .from("room_players")
+      .delete()
+      .eq(
+        "room_id",
+        currentRoomId
+      )
+      .eq(
+        "player_id",
+        playerId
+      );
+  }
+
+  currentRoomId=null;
+  currentRoomCode=null;
+
+  roomPanel.classList.add(
+    "hidden"
+  );
+
+  hud.classList.add(
+    "hidden"
+  );
+
+  menu.classList.remove(
+    "hidden"
+  );
+}
+
+/* =========================================================
+   NETWORK PLAYER UPDATE
+========================================================= */
+
+let playerNetworkTimer=0;
+
+async function networkPlayerTick(dt){
+
+  if(
+    !gameRunning ||
+    !currentRoomId
+  )
+    return;
+
+  playerNetworkTimer+=dt;
+
+  if(
+    playerNetworkTimer<.25
+  )
+    return;
+
+  playerNetworkTimer=0;
+
+  updateOwnPlayer();
+}
+
+/* =========================================================
+   ANIMATION
+========================================================= */
+
+function animate(){
+
+  requestAnimationFrame(
+    animate
+  );
+
+  const dt =
+    Math.min(
+      clock.getDelta(),
+      .05
+    );
+
+  updateGame(dt);
+  updateTimer(dt);
+  networkPlayerTick(dt);
+
+  renderer.render(
+    scene,
+    camera
+  );
+}
+
+/* =========================================================
+   RESIZE
+========================================================= */
+
+function resize(){
+
+  camera.aspect =
+    innerWidth/
+    innerHeight;
+
+  camera.updateProjectionMatrix();
+
+  renderer.setSize(
+    innerWidth,
+    innerHeight
+  );
+}
+
+/* =========================================================
+   INITIALIZE
+========================================================= */
+
+init3D();
+
+setTimeout(()=>{
+
+  loading.classList.add(
+    "hidden"
+  );
+
+  menu.classList.remove(
+    "hidden"
+  );
+
+  updateRankUI();
+
+},700);
+
+/* =========================================================
+   AUTO REFRESH ROOM
+========================================================= */
+
+setInterval(
+  ()=>{
+    if(
+      currentRoomId &&
+      !gameRunning
+    ){
+      refreshRoomPlayers();
+    }
+  },
+  2000
+);
+
+</script>
+
+</body>
+  </html>
