@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport"
       content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<title>Zombie Survival Online</title>
+<title>Zombie Survival</title>
 
 <style>
 *{
@@ -18,9 +18,8 @@ html,body{
   width:100%;
   height:100%;
   overflow:hidden;
-  background:#05070b;
+  background:#05080b;
   font-family:Arial,sans-serif;
-  touch-action:none;
 }
 
 canvas{
@@ -32,8 +31,8 @@ canvas{
 #loading{
   position:fixed;
   inset:0;
-  z-index:1000;
-  background:#05070b;
+  z-index:9999;
+  background:#05080b;
   color:white;
   display:flex;
   align-items:center;
@@ -43,125 +42,116 @@ canvas{
 }
 
 #loading small{
-  opacity:.6;
   margin-top:10px;
-}
-
-.panel{
-  position:fixed;
-  z-index:200;
-  left:50%;
-  top:50%;
-  transform:translate(-50%,-50%);
-  width:min(92vw,420px);
-  padding:22px;
-  border-radius:22px;
-  background:rgba(5,9,16,.94);
-  border:1px solid rgba(255,255,255,.12);
-  box-shadow:0 20px 80px rgba(0,0,0,.7);
-  color:white;
-}
-
-.panel h1{
-  margin:0 0 5px;
-  text-align:center;
-  font-size:27px;
-}
-
-.panel .sub{
-  text-align:center;
-  opacity:.65;
-  margin-bottom:20px;
-}
-
-input{
-  width:100%;
-  padding:14px;
-  margin:6px 0;
-  border-radius:12px;
-  border:1px solid #39404b;
-  background:#10151e;
-  color:white;
-  outline:none;
-  font-size:16px;
-}
-
-button{
-  width:100%;
-  padding:14px;
-  margin-top:9px;
-  border:0;
-  border-radius:12px;
-  background:#1769ff;
-  color:white;
-  font-size:16px;
-  font-weight:bold;
-}
-
-button:active{
-  transform:scale(.97);
-}
-
-.secondary{
-  background:#202733;
-}
-
-.hidden{
-  display:none!important;
+  opacity:.6;
 }
 
 #hud{
   position:fixed;
-  z-index:20;
   inset:0;
   pointer-events:none;
+  z-index:20;
   color:white;
 }
 
-#topbar{
+#top{
   position:absolute;
   top:10px;
   left:10px;
   right:10px;
   display:flex;
   justify-content:space-between;
-  gap:8px;
+  align-items:flex-start;
 }
 
-.hudbox{
-  background:rgba(0,0,0,.48);
-  border:1px solid rgba(255,255,255,.1);
+.box{
+  background:rgba(0,0,0,.5);
+  border:1px solid rgba(255,255,255,.15);
   border-radius:12px;
   padding:8px 11px;
-  backdrop-filter:blur(5px);
-  font-size:13px;
+  text-shadow:0 1px 3px #000;
 }
 
 #leftInfo{
-  display:flex;
-  gap:6px;
-  flex-wrap:wrap;
-}
-
-#rightInfo{
-  text-align:right;
+  line-height:1.45;
 }
 
 #mission{
   position:absolute;
+  top:10px;
   left:50%;
-  top:13px;
   transform:translateX(-50%);
-  min-width:190px;
   text-align:center;
+  min-width:190px;
+}
+
+#missionTitle{
+  font-size:13px;
+  opacity:.75;
+}
+
+#missionCount{
+  font-size:20px;
+  font-weight:bold;
+}
+
+#timer{
+  font-size:17px;
+  color:#ffd54a;
+}
+
+#rank{
+  font-size:12px;
+  margin-top:2px;
+}
+
+#rightInfo{
+  text-align:right;
+  line-height:1.5;
+}
+
+#hpWrap{
+  position:absolute;
+  left:12px;
+  bottom:18px;
+  width:210px;
+}
+
+#hpBar{
+  height:16px;
+  border-radius:10px;
+  background:#222;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.3);
+}
+
+#hpFill{
+  width:100%;
+  height:100%;
+  background:#34e27a;
+  transition:.15s;
+}
+
+#hpText{
+  font-weight:bold;
+  margin-top:3px;
+  font-size:13px;
+}
+
+#ammo{
+  position:absolute;
+  right:15px;
+  bottom:18px;
+  font-size:24px;
+  font-weight:bold;
 }
 
 #crosshair{
   position:absolute;
   left:50%;
   top:50%;
-  width:25px;
-  height:25px;
+  width:24px;
+  height:24px;
   transform:translate(-50%,-50%);
 }
 
@@ -169,227 +159,196 @@ button:active{
 #crosshair:after{
   content:"";
   position:absolute;
-  background:#fff;
+  background:white;
   box-shadow:0 0 4px #000;
 }
 
 #crosshair:before{
-  width:3px;
-  height:25px;
   left:11px;
-  top:0;
+  top:2px;
+  width:2px;
+  height:20px;
 }
 
 #crosshair:after{
-  width:25px;
-  height:3px;
-  left:0;
+  left:2px;
   top:11px;
+  width:20px;
+  height:2px;
 }
 
 #crosshair.locked:before,
 #crosshair.locked:after{
-  background:#ff2020;
-}
-
-#crosshair.locked{
-  transform:translate(-50%,-50%) scale(1.25);
-}
-
-#ammo{
-  position:absolute;
-  right:18px;
-  bottom:22px;
-  font-size:25px;
-  font-weight:bold;
-  text-shadow:0 2px 5px #000;
-}
-
-#weapon{
-  position:absolute;
-  right:7%;
-  bottom:2%;
-  font-size:45px;
-  transform:rotate(-12deg);
-  filter:drop-shadow(0 4px 5px #000);
-}
-
-#hpWrap{
-  position:absolute;
-  left:18px;
-  bottom:23px;
-  width:180px;
-}
-
-#hpText{
-  font-size:13px;
-  margin-bottom:4px;
-  text-shadow:0 2px 4px #000;
-}
-
-#hpBar{
-  height:13px;
-  border-radius:20px;
-  background:#30343a;
-  overflow:hidden;
-  border:1px solid rgba(255,255,255,.3);
-}
-
-#hpFill{
-  height:100%;
-  width:100%;
-  background:#29e05b;
-  transition:.2s;
+  background:#ff3030;
 }
 
 #joystick{
   position:absolute;
-  z-index:30;
   left:22px;
-  bottom:80px;
+  bottom:72px;
   width:125px;
   height:125px;
   border-radius:50%;
   background:rgba(255,255,255,.08);
-  border:2px solid rgba(255,255,255,.2);
+  border:2px solid rgba(255,255,255,.18);
   pointer-events:auto;
 }
 
 #stick{
   position:absolute;
-  width:55px;
-  height:55px;
-  left:33px;
-  top:33px;
+  left:37px;
+  top:37px;
+  width:48px;
+  height:48px;
   border-radius:50%;
   background:rgba(255,255,255,.28);
-  border:2px solid rgba(255,255,255,.35);
+  border:2px solid rgba(255,255,255,.4);
 }
 
-.action{
-  position:absolute;
-  z-index:30;
+.btn{
   pointer-events:auto;
+  position:absolute;
+  border:1px solid rgba(255,255,255,.25);
+  color:white;
+  background:rgba(0,0,0,.55);
   border-radius:50%;
   display:flex;
-  align-items:center;
   justify-content:center;
+  align-items:center;
   font-weight:bold;
-  box-shadow:0 5px 20px rgba(0,0,0,.4);
 }
 
 #fire{
-  width:82px;
-  height:82px;
-  right:22px;
-  bottom:90px;
-  background:rgba(210,30,30,.75);
+  right:25px;
+  bottom:78px;
+  width:92px;
+  height:92px;
+  background:rgba(180,20,20,.55);
+  font-size:18px;
 }
 
 #reload{
-  width:60px;
-  height:60px;
-  right:120px;
-  bottom:78px;
-  background:rgba(40,50,65,.85);
-  font-size:12px;
-}
-
-#skill{
-  width:58px;
-  height:58px;
-  right:30px;
-  bottom:180px;
-  background:rgba(120,50,200,.8);
+  right:135px;
+  bottom:52px;
+  width:65px;
+  height:65px;
   font-size:11px;
 }
 
 #menuBtn{
-  position:absolute;
   pointer-events:auto;
+  position:absolute;
   right:12px;
   top:62px;
-  width:46px;
-  height:46px;
-  border-radius:12px;
-  background:rgba(0,0,0,.5);
-  display:flex;
-  align-items:center;
-  justify-content:center;
+  width:42px;
+  height:42px;
+  border-radius:10px;
+  background:rgba(0,0,0,.55);
+  color:white;
+  border:1px solid rgba(255,255,255,.2);
   font-size:22px;
 }
 
-#toast{
+#menu{
+  display:none;
   position:fixed;
-  z-index:500;
-  left:50%;
-  bottom:42%;
-  transform:translateX(-50%);
-  padding:12px 18px;
-  border-radius:12px;
-  background:rgba(0,0,0,.8);
+  z-index:100;
+  inset:0;
+  background:rgba(0,0,0,.78);
+  align-items:center;
+  justify-content:center;
+}
+
+.panel{
+  width:min(92vw,400px);
+  background:#10151b;
   color:white;
-  opacity:0;
-  transition:.2s;
-  pointer-events:none;
+  border:1px solid #33404c;
+  border-radius:18px;
+  padding:22px;
+  box-shadow:0 20px 70px #000;
 }
 
-#toast.show{
-  opacity:1;
+.panel h2{
+  margin:0 0 8px;
+  text-align:center;
 }
 
-#roomPlayers{
-  margin:12px 0;
-  max-height:130px;
+.panel input{
+  width:100%;
+  padding:13px;
+  border-radius:10px;
+  border:1px solid #384550;
+  background:#080b0f;
+  color:white;
+  margin:10px 0;
+  font-size:16px;
+}
+
+.action{
+  width:100%;
+  border:0;
+  border-radius:11px;
+  padding:13px;
+  margin-top:8px;
+  font-weight:bold;
+  color:white;
+  background:#1769aa;
+}
+
+.action.red{
+  background:#9b2525;
+}
+
+#leaderboard{
+  margin-top:12px;
+  max-height:260px;
   overflow:auto;
-  background:#0b1018;
-  border-radius:12px;
+  background:#080b0f;
+  border-radius:10px;
   padding:8px;
 }
 
-.playerRow{
-  padding:7px;
-  border-bottom:1px solid rgba(255,255,255,.07);
-  font-size:14px;
+.rankrow{
+  display:flex;
+  justify-content:space-between;
+  padding:7px 4px;
+  border-bottom:1px solid #222;
+  font-size:13px;
 }
 
-#gameover{
+#gameOver{
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:90;
+  background:rgba(0,0,0,.82);
+  align-items:center;
+  justify-content:center;
+}
+
+.center{
   text-align:center;
 }
 
 .big{
   font-size:34px;
   font-weight:bold;
+  margin-bottom:10px;
 }
 
-.star{
-  font-size:25px;
-}
-
-@media(max-height:500px){
-  #joystick{
-    bottom:40px;
-  }
-
-  #fire{
-    bottom:45px;
-  }
-
-  #reload{
-    bottom:40px;
-  }
-
-  #skill{
-    bottom:125px;
-  }
-
-  #hpWrap{
-    bottom:8px;
-  }
-
-  #ammo{
-    bottom:8px;
-  }
+#notice{
+  position:absolute;
+  left:50%;
+  top:62%;
+  transform:translate(-50%,-50%);
+  color:white;
+  font-size:18px;
+  font-weight:bold;
+  text-align:center;
+  opacity:0;
+  transition:.2s;
+  text-shadow:0 2px 5px #000;
 }
 </style>
 </head>
@@ -398,155 +357,95 @@ button:active{
 
 <div id="loading">
   <div>ĐANG TẢI ZOMBIE SURVIVAL...</div>
-  <small>3D • ONLINE • MULTIPLAYER</small>
+  <small>Chuẩn bị chiến đấu</small>
 </div>
 
-<!-- MENU -->
-<div id="menu" class="panel hidden">
-  <h1>🧟 ZOMBIE SURVIVAL</h1>
-  <div class="sub">ONLINE MULTIPLAYER</div>
+<div id="hud">
 
-  <input id="playerName" maxlength="18" placeholder="Tên người chơi">
+  <div id="top">
 
-  <button id="createBtn">🎮 TẠO PHÒNG</button>
-
-  <input id="roomCodeInput"
-         maxlength="6"
-         placeholder="Nhập mã phòng">
-
-  <button id="joinBtn" class="secondary">
-    🔑 VÀO PHÒNG
-  </button>
-
-  <button id="soloBtn" class="secondary">
-    🤖 CHƠI SOLO
-  </button>
-</div>
-
-<!-- ROOM -->
-<div id="roomPanel" class="panel hidden">
-  <h1>🏠 PHÒNG</h1>
-
-  <div style="text-align:center">
-    Mã phòng:
-    <div id="roomCode"
-         style="font-size:34px;font-weight:bold;letter-spacing:7px;margin:8px">
-      ------
-    </div>
-  </div>
-
-  <div id="roomStatus"
-       style="text-align:center;opacity:.7">
-    Đang chờ người chơi...
-  </div>
-
-  <div id="roomPlayers"></div>
-
-  <button id="startBtn">
-    🚀 BẮT ĐẦU
-  </button>
-
-  <button id="leaveRoomBtn" class="secondary">
-    RỜI PHÒNG
-  </button>
-</div>
-
-<!-- GAME OVER -->
-<div id="gameover" class="panel hidden">
-  <h1 id="resultTitle">THUA</h1>
-
-  <div class="big" id="resultScore">0</div>
-
-  <div id="resultInfo"></div>
-
-  <button id="againBtn">
-    🔄 CHƠI LẠI
-  </button>
-
-  <button id="homeBtn" class="secondary">
-    🏠 MENU
-  </button>
-</div>
-
-<div id="toast"></div>
-
-<div id="hud" class="hidden">
-
-  <div id="topbar">
-
-    <div id="leftInfo">
-      <div class="hudbox">
-        ⭐ <span id="stars">1</span>
-      </div>
-
-      <div class="hudbox">
-        🏆 <span id="rank">TÂN BINH</span>
-      </div>
-
-      <div class="hudbox">
-        🧟 <span id="kills">0</span>
-      </div>
+    <div id="leftInfo" class="box">
+      🎯 Wave: <b id="wave">1</b><br>
+      ☠️ Kills: <b id="kills">0</b><br>
+      ⭐ Sao: <b id="stars">1</b><br>
+      🏆 <span id="rank">TÂN BINH</span>
     </div>
 
-    <div id="rightInfo">
-      <div class="hudbox">
-        🌊 WAVE <span id="wave">1</span>
-      </div>
-
-      <div class="hudbox">
-        ⏱️ <span id="timer">180</span>
-      </div>
+    <div id="mission" class="box">
+      <div id="missionTitle">NHIỆM VỤ TRẬN <span id="match">1</span></div>
+      <div id="missionCount">0 / 10</div>
+      <div id="timer">03:00</div>
     </div>
 
-  </div>
+    <div id="rightInfo" class="box">
+      👤 <span id="playerName">Player</span><br>
+      💰 Score: <b id="score">0</b>
+    </div>
 
-  <div id="mission" class="hudbox">
-    🎯 NHIỆM VỤ
-    <b id="missionText">0 / 10</b>
   </div>
 
   <div id="crosshair"></div>
 
-  <div id="hpWrap">
-    <div id="hpText">
-      ❤️ HP <span id="hpNumber">100</span>/100
-    </div>
+  <div id="notice"></div>
 
+  <div id="hpWrap">
     <div id="hpBar">
       <div id="hpFill"></div>
     </div>
+    <div id="hpText">HP 100 / 100</div>
   </div>
 
-  <div id="ammo">
-    🔫 <span id="ammoNumber">120</span>/120
-  </div>
-
-  <div id="weapon">🔫</div>
-
-  <div id="menuBtn">☰</div>
+  <div id="ammo">120 / 120</div>
 
   <div id="joystick">
     <div id="stick"></div>
   </div>
 
-  <div id="fire" class="action">
-    BẮN
-  </div>
-
-  <div id="reload" class="action">
-    NẠP
-  </div>
-
-  <div id="skill" class="action">
-    RAGE
-  </div>
+  <div id="reload" class="btn">NẠP</div>
+  <div id="fire" class="btn">BẮN</div>
+  <button id="menuBtn">☰</button>
 
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<div id="menu">
+  <div class="panel">
+    <h2>☠️ ZOMBIE SURVIVAL</h2>
 
-<script>
+    <div>
+      Tên người chơi:
+      <input id="nameInput" maxlength="20" placeholder="Nhập tên...">
+    </div>
+
+    <button class="action" id="saveName">LƯU TÊN</button>
+    <button class="action" id="showBoard">🏆 TOP 100</button>
+    <button class="action red" id="closeMenu">ĐÓNG</button>
+
+    <div id="leaderboard" style="display:none">
+      Đang tải...
+    </div>
+  </div>
+</div>
+
+<div id="gameOver">
+  <div class="panel center">
+    <div class="big" id="resultTitle">THẤT BẠI</div>
+
+    <div id="resultText"></div>
+
+    <button class="action" id="nextMatch">CHƠI TIẾP</button>
+    <button class="action" id="retry">CHƠI LẠI TRẬN</button>
+    <button class="action red" id="resultMenu">MENU</button>
+  </div>
+</div>
+
+<script type="module">
+
+import * as THREE from
+"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js";
+
+import { OrbitControls } from
+"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/OrbitControls.js";
+
 /* =========================================================
    SUPABASE
 ========================================================= */
@@ -554,979 +453,854 @@ button:active{
 const SUPABASE_URL =
 "https://iluxyjrukvvixrohtawj.supabase.co";
 
-const SUPABASE_PUBLISHABLE_KEY =
+const SUPABASE_KEY =
 "sb_publishable_omY3B4G7a3LwtiTRLl3aeQ_yqwwp4D1";
-
-const supabase =
-window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_PUBLISHABLE_KEY
-);
 
 /* =========================================================
    ELEMENTS
 ========================================================= */
 
-const loading =
-document.getElementById("loading");
+const loading = document.getElementById("loading");
+const waveEl = document.getElementById("wave");
+const killsEl = document.getElementById("kills");
+const starsEl = document.getElementById("stars");
+const rankEl = document.getElementById("rank");
+const scoreEl = document.getElementById("score");
+const ammoEl = document.getElementById("ammo");
+const hpFill = document.getElementById("hpFill");
+const hpText = document.getElementById("hpText");
+const crosshair = document.getElementById("crosshair");
+const missionCount = document.getElementById("missionCount");
+const missionEl = document.getElementById("match");
+const timerEl = document.getElementById("timer");
+const playerNameEl = document.getElementById("playerName");
+const notice = document.getElementById("notice");
 
-const menu =
-document.getElementById("menu");
-
-const roomPanel =
-document.getElementById("roomPanel");
-
-const gameover =
-document.getElementById("gameover");
-
-const hud =
-document.getElementById("hud");
-
-const playerNameInput =
-document.getElementById("playerName");
-
-const roomCodeInput =
-document.getElementById("roomCodeInput");
-
-const roomCodeEl =
-document.getElementById("roomCode");
-
-const roomPlayersEl =
-document.getElementById("roomPlayers");
-
-const roomStatusEl =
-document.getElementById("roomStatus");
-
-const crosshair =
-document.getElementById("crosshair");
-
-const toast =
-document.getElementById("toast");
-
-const starsEl =
-document.getElementById("stars");
-
-const rankEl =
-document.getElementById("rank");
-
-const killsEl =
-document.getElementById("kills");
-
-const waveEl =
-document.getElementById("wave");
-
-const timerEl =
-document.getElementById("timer");
-
-const missionTextEl =
-document.getElementById("missionText");
-
-const hpNumberEl =
-document.getElementById("hpNumber");
-
-const hpFillEl =
-document.getElementById("hpFill");
-
-const ammoNumberEl =
-document.getElementById("ammoNumber");
+const menu = document.getElementById("menu");
+const gameOver = document.getElementById("gameOver");
+const leaderboard = document.getElementById("leaderboard");
 
 /* =========================================================
-   LOCAL DATA
+   SAVE DATA
 ========================================================= */
 
-let playerId =
-localStorage.getItem("zs_player_id");
-
-if(!playerId){
-  playerId =
-    crypto.randomUUID();
-
-  localStorage.setItem(
-    "zs_player_id",
-    playerId
-  );
-}
-
 let playerName =
-localStorage.getItem("zs_player_name")
-|| "Player";
+localStorage.getItem("zs_player_name") || "Player";
 
-playerNameInput.value =
-playerName;
+let match =
+Number(localStorage.getItem("zs_match") || 1);
 
 let stars =
-parseInt(
-  localStorage.getItem("zs_stars")
-  || "1"
-);
+Number(localStorage.getItem("zs_stars") || 1);
 
-let matchNumber =
-parseInt(
-  localStorage.getItem("zs_match")
-  || "1"
-);
+function getRank(stars){
+
+  if(stars >= 999) return "☠️ SIÊU CAO THỦ";
+  if(stars >= 800) return "⚡ ĐẠI CAO THỦ";
+  if(stars >= 600) return "👑 CAO THỦ";
+  if(stars >= 400) return "🔥 KIM CƯƠNG";
+  if(stars >= 200) return "💎 BẠCH KIM";
+  if(stars >= 100) return "🥇 VÀNG";
+  if(stars >= 50) return "🥈 BẠC";
+  if(stars >= 10) return "🥉 ĐỒNG";
+
+  return "🪵 TÂN BINH";
+}
+
+function getMissionTarget(m){
+
+  const early = {
+    1:10,
+    2:15,
+    3:20,
+    4:30,
+    5:40,
+    6:50,
+    7:65,
+    8:80,
+    9:100,
+    10:120
+  };
+
+  if(early[m]) return early[m];
+
+  if(m <= 20)
+    return Math.round(
+      120 + (m-10) * 13
+    );
+
+  if(m <= 50)
+    return Math.round(
+      250 + (m-20) * (350/30)
+    );
+
+  if(m <= 100)
+    return Math.round(
+      600 + (m-50) * 10
+    );
+
+  if(m <= 150)
+    return Math.round(
+      1100 + (m-100) * 10
+    );
+
+  if(m <= 200)
+    return Math.round(
+      1600 + (m-150) * 8
+    );
+
+  return 2000;
+}
+
+let missionTarget = getMissionTarget(match);
 
 function saveProgress(){
-  localStorage.setItem(
-    "zs_stars",
-    stars
-  );
-
-  localStorage.setItem(
-    "zs_match",
-    matchNumber
-  );
 
   localStorage.setItem(
     "zs_player_name",
     playerName
   );
+
+  localStorage.setItem(
+    "zs_match",
+    match
+  );
+
+  localStorage.setItem(
+    "zs_stars",
+    stars
+  );
 }
 
-/* =========================================================
-   RANK
-========================================================= */
-
-function getRank(s){
-
-  if(s >= 999)
-    return "☠️ SIÊU CAO THỦ";
-
-  if(s >= 800)
-    return "⚡ ĐẠI CAO THỦ";
-
-  if(s >= 600)
-    return "👑 CAO THỦ";
-
-  if(s >= 400)
-    return "🔥 KIM CƯƠNG";
-
-  if(s >= 200)
-    return "💎 BẠCH KIM";
-
-  if(s >= 100)
-    return "🥇 VÀNG";
-
-  if(s >= 50)
-    return "🥈 BẠC";
-
-  if(s >= 10)
-    return "🥉 ĐỒNG";
-
-  return "🪵 TÂN BINH";
-}
-
-function updateRankUI(){
+function updateRank(){
 
   starsEl.textContent =
-    stars >= 999
-      ? "999+"
-      : stars;
+    stars >= 999 ? "999+" : stars;
 
   rankEl.textContent =
     getRank(stars);
+
+  missionEl.textContent =
+    match;
+
+  missionCount.textContent =
+    `${kills} / ${missionTarget}`;
+
+  playerNameEl.textContent =
+    playerName;
 }
 
-/* =========================================================
-   MISSION
-========================================================= */
-
-function getMissionTarget(match){
-
-  const first = [
-    10,
-    15,
-    20,
-    30,
-    40,
-    50,
-    65,
-    80,
-    100,
-    120
-  ];
-
-  if(match <= 10)
-    return first[match-1];
-
-  if(match <= 20){
-
-    return Math.round(
-      120 +
-      (match-10) *
-      13
-    );
-  }
-
-  if(match <= 50){
-
-    return Math.round(
-      250 +
-      (match-20) *
-      (350/30)
-    );
-  }
-
-  if(match <= 100){
-
-    return Math.round(
-      600 +
-      (match-50) *
-      10
-    );
-  }
-
-  if(match <= 150){
-
-    return Math.round(
-      1100 +
-      (match-100) *
-      10
-    );
-  }
-
-  if(match <= 200){
-
-    return Math.round(
-      1600 +
-      (match-150) *
-      8
-    );
-  }
-
-  return 2000;
-}
-
-/* =========================================================
-   GAME STATE
-========================================================= */
-
-let scene;
-let camera;
-let renderer;
-let clock;
-
-let player;
-let gun;
-
-let zombies = [];
-let remotePlayers = {};
-
-let targetZombie = null;
-
-let hp = 100;
-let ammo = 120;
-let kills = 0;
-let score = 0;
-let wave = 1;
-
-let missionTarget =
-getMissionTarget(matchNumber);
-
-let missionKills = 0;
-
-let timeLeft = 180;
-
-let gameRunning = false;
-let isHost = false;
-
-let currentRoomId = null;
-let currentRoomCode = null;
-
-let roomChannel = null;
-
-let spawnTimer = 0;
-let shootCooldown = 0;
-let reloadTimer = 0;
-
-let rageActive = false;
-let rageTimer = 0;
-
-/* =========================================================
-   AUDIO
-========================================================= */
-
-let audioContext = null;
-
-function audioInit(){
-
-  if(!audioContext){
-
-    audioContext =
-      new (
-        window.AudioContext ||
-        window.webkitAudioContext
-      )();
-  }
-}
-
-function sound(freq,duration,type="square"){
-
-  try{
-
-    audioInit();
-
-    const osc =
-      audioContext.createOscillator();
-
-    const gain =
-      audioContext.createGain();
-
-    osc.type = type;
-
-    osc.frequency.value =
-      freq;
-
-    gain.gain.setValueAtTime(
-      .06,
-      audioContext.currentTime
-    );
-
-    gain.gain.exponentialRampToValueAtTime(
-      .001,
-      audioContext.currentTime +
-      duration
-    );
-
-    osc.connect(gain);
-    gain.connect(audioContext.destination);
-
-    osc.start();
-
-    osc.stop(
-      audioContext.currentTime +
-      duration
-    );
-
-  }catch(e){}
-}
-
-function gunSound(){
-  sound(90,.09,"sawtooth");
-}
-
-function hitSound(){
-  sound(420,.06,"square");
-}
-
-function reloadSound(){
-  sound(180,.2,"triangle");
-}
+updateRank();
 
 /* =========================================================
    THREE.JS
 ========================================================= */
 
-function init3D(){
+const scene = new THREE.Scene();
 
-  scene =
-    new THREE.Scene();
+scene.background =
+new THREE.Color(0x071018);
 
-  scene.background =
-    new THREE.Color(0x07101c);
+scene.fog =
+new THREE.FogExp2(0x071018,0.018);
 
-  scene.fog =
-    new THREE.FogExp2(
-      0x07101c,
-      .014
-    );
+const camera =
+new THREE.PerspectiveCamera(
+  65,
+  innerWidth/innerHeight,
+  0.1,
+  500
+);
 
-  camera =
-    new THREE.PerspectiveCamera(
-      65,
-      innerWidth/innerHeight,
-      .1,
-      500
-    );
+camera.position.set(0,5,9);
 
-  camera.position.set(
-    0,
-    4,
-    9
-  );
+const renderer =
+new THREE.WebGLRenderer({
+  antialias:true,
+  powerPreference:"high-performance"
+});
 
-  renderer =
-    new THREE.WebGLRenderer({
-      antialias:false,
-      powerPreference:"high-performance"
-    });
+renderer.setPixelRatio(
+  Math.min(devicePixelRatio,1.5)
+);
 
-  renderer.setSize(
-    innerWidth,
-    innerHeight
-  );
+renderer.setSize(
+  innerWidth,
+  innerHeight
+);
 
-  renderer.setPixelRatio(
-    Math.min(
-      devicePixelRatio,
-      1.5
-    )
-  );
+renderer.shadowMap.enabled = true;
 
-  renderer.shadowMap.enabled = false;
-
-  document.body.appendChild(
-    renderer.domElement
-  );
-
-  clock =
-    new THREE.Clock();
-
-  createLights();
-  createWorld();
-  createPlayer();
-
-  addEventListener(
-    "resize",
-    resize
-  );
-
-  animate();
-}
+document.body.appendChild(
+  renderer.domElement
+);
 
 /* =========================================================
-   LIGHTS
+   LIGHT
 ========================================================= */
 
-function createLights(){
+const hemi =
+new THREE.HemisphereLight(
+  0x9bbcff,
+  0x101010,
+  1.8
+);
 
-  const hemi =
-    new THREE.HemisphereLight(
-      0x8aa8ff,
-      0x172015,
-      1.8
-    );
+scene.add(hemi);
 
-  scene.add(hemi);
+const moon =
+new THREE.DirectionalLight(
+  0x8eb4ff,
+  2
+);
 
-  const moon =
-    new THREE.DirectionalLight(
-      0x9bb7ff,
-      1.2
-    );
+moon.position.set(
+  -30,40,20
+);
 
-  moon.position.set(
-    -30,
-    50,
-    20
-  );
+moon.castShadow = true;
 
-  scene.add(moon);
-}
+scene.add(moon);
 
 /* =========================================================
    WORLD
 ========================================================= */
 
-function createWorld(){
+const groundMat =
+new THREE.MeshStandardMaterial({
+  color:0x18241e,
+  roughness:1
+});
 
-  const groundMat =
-    new THREE.MeshLambertMaterial({
-      color:0x25352b
-    });
+const ground =
+new THREE.Mesh(
+  new THREE.PlaneGeometry(240,240),
+  groundMat
+);
 
-  const ground =
-    new THREE.Mesh(
-      new THREE.PlaneGeometry(
-        220,
-        220
-      ),
-      groundMat
-    );
+ground.rotation.x =
+-Math.PI/2;
 
-  ground.rotation.x =
-    -Math.PI/2;
+ground.receiveShadow = true;
 
-  scene.add(ground);
+scene.add(ground);
 
-  /* roads */
+/* ROAD */
 
-  const roadMat =
-    new THREE.MeshLambertMaterial({
-      color:0x20242a
-    });
+const roadMat =
+new THREE.MeshStandardMaterial({
+  color:0x22282b,
+  roughness:.9
+});
 
-  const road1 =
-    new THREE.Mesh(
-      new THREE.BoxGeometry(
-        14,
-        .08,
-        220
-      ),
-      roadMat
-    );
+function makeRoad(
+  x,z,w,d
+){
 
-  road1.position.y=.02;
-  scene.add(road1);
+  const road =
+  new THREE.Mesh(
+    new THREE.BoxGeometry(w,.08,d),
+    roadMat
+  );
 
-  const road2 =
-    new THREE.Mesh(
-      new THREE.BoxGeometry(
-        220,
-        .08,
-        12
-      ),
-      roadMat
-    );
+  road.position.set(
+    x,.04,z
+  );
 
-  road2.position.y=.025;
-  scene.add(road2);
-
-  /* houses */
-
-  for(let i=0;i<10;i++){
-
-    const x =
-      (i%2===0 ? -1 : 1) *
-      (24 + Math.floor(i/2)*15);
-
-    const z =
-      -65 + (i%5)*32;
-
-    createHouse(
-      x,
-      z
-    );
-  }
-
-  /* trees */
-
-  for(let i=0;i<45;i++){
-
-    let x =
-      (Math.random()-.5)*180;
-
-    let z =
-      (Math.random()-.5)*180;
-
-    if(
-      Math.abs(x)<12 ||
-      Math.abs(z)<10
-    ){
-      i--;
-      continue;
-    }
-
-    createTree(x,z);
-  }
-
-  /* rocks */
-
-  for(let i=0;i<35;i++){
-
-    const x =
-      (Math.random()-.5)*180;
-
-    const z =
-      (Math.random()-.5)*180;
-
-    createRock(x,z);
-  }
-
-  /* lamps */
-
-  for(let i=-9;i<=9;i+=2){
-
-    createLamp(
-      7,
-      i*12
-    );
-
-    createLamp(
-      -7,
-      i*12
-    );
-  }
+  scene.add(road);
 }
 
-function createHouse(x,z){
+makeRoad(0,0,12,240);
+makeRoad(0,0,240,10);
+
+/* ROAD MARKINGS */
+
+const markMat =
+new THREE.MeshBasicMaterial({
+  color:0xd8c45a
+});
+
+for(let z=-110;z<110;z+=12){
+
+  const mark =
+  new THREE.Mesh(
+    new THREE.BoxGeometry(
+      .18,.09,5
+    ),
+    markMat
+  );
+
+  mark.position.set(
+    0,.1,z
+  );
+
+  scene.add(mark);
+}
+
+/* =========================================================
+   HOUSES
+========================================================= */
+
+function makeHouse(x,z){
 
   const group =
-    new THREE.Group();
+  new THREE.Group();
 
   const body =
-    new THREE.Mesh(
-      new THREE.BoxGeometry(
-        12,
-        7,
-        10
-      ),
-      new THREE.MeshLambertMaterial({
-        color:
-          0x56606a +
-          Math.floor(
-            Math.random()*20
-          )
-      })
-    );
+  new THREE.Mesh(
+    new THREE.BoxGeometry(
+      8,5,7
+    ),
+    new THREE.MeshStandardMaterial({
+      color:
+      new THREE.Color().setHSL(
+        Math.random(),
+        .25,
+        .25
+      )
+    })
+  );
 
-  body.position.y=3.5;
+  body.position.y=2.5;
+  body.castShadow=true;
   group.add(body);
 
   const roof =
-    new THREE.Mesh(
-      new THREE.ConeGeometry(
-        8.5,
-        5,
-        4
-      ),
-      new THREE.MeshLambertMaterial({
-        color:0x202832
-      })
-    );
+  new THREE.Mesh(
+    new THREE.ConeGeometry(
+      6,3,4
+    ),
+    new THREE.MeshStandardMaterial({
+      color:0x30343a
+    })
+  );
 
-  roof.rotation.y =
-    Math.PI/4;
-
-  roof.position.y=9.5;
-
+  roof.position.y=6;
+  roof.rotation.y=Math.PI/4;
+  roof.castShadow=true;
   group.add(roof);
 
+  const door =
+  new THREE.Mesh(
+    new THREE.BoxGeometry(
+      1.4,2.5,.12
+    ),
+    new THREE.MeshStandardMaterial({
+      color:0x16191c
+    })
+  );
+
+  door.position.set(
+    0,1.25,3.55
+  );
+
+  group.add(door);
+
+  const windowMat =
+  new THREE.MeshBasicMaterial({
+    color:0xffd66b
+  });
+
+  for(const wx of [-2.3,2.3]){
+
+    const win =
+    new THREE.Mesh(
+      new THREE.BoxGeometry(
+        1.4,1.4,.1
+      ),
+      windowMat
+    );
+
+    win.position.set(
+      wx,2.7,3.56
+    );
+
+    group.add(win);
+  }
+
   group.position.set(
-    x,
-    0,
-    z
+    x,0,z
   );
 
   scene.add(group);
 }
 
-function createTree(x,z){
+for(let i=0;i<18;i++){
 
-  const group =
-    new THREE.Group();
+  const side =
+  i%2===0 ? -1 : 1;
+
+  const z =
+  -95 + Math.floor(i/2)*22;
+
+  makeHouse(
+    side*(14+Math.random()*5),
+    z
+  );
+}
+
+/* =========================================================
+   TREES
+========================================================= */
+
+function makeTree(x,z){
+
+  const g =
+  new THREE.Group();
 
   const trunk =
-    new THREE.Mesh(
-      new THREE.CylinderGeometry(
-        .35,
-        .5,
-        4,
-        7
-      ),
-      new THREE.MeshLambertMaterial({
-        color:0x493327
-      })
-    );
+  new THREE.Mesh(
+    new THREE.CylinderGeometry(
+      .35,.5,4,7
+    ),
+    new THREE.MeshStandardMaterial({
+      color:0x493321
+    })
+  );
 
   trunk.position.y=2;
-  group.add(trunk);
+  g.add(trunk);
 
-  const leaves =
-    new THREE.Mesh(
-      new THREE.SphereGeometry(
-        2.7,
-        7,
-        7
-      ),
-      new THREE.MeshLambertMaterial({
-        color:0x173d25
-      })
-    );
-
-  leaves.position.y=5;
-  group.add(leaves);
-
-  group.position.set(
-    x,
-    0,
-    z
+  const crown =
+  new THREE.Mesh(
+    new THREE.SphereGeometry(
+      2.4,8,7
+    ),
+    new THREE.MeshStandardMaterial({
+      color:0x183d24
+    })
   );
 
-  scene.add(group);
-}
+  crown.position.y=5;
+  crown.castShadow=true;
+  g.add(crown);
 
-function createRock(x,z){
-
-  const rock =
-    new THREE.Mesh(
-      new THREE.DodecahedronGeometry(
-        .8 +
-        Math.random()*1.5,
-        0
-      ),
-      new THREE.MeshLambertMaterial({
-        color:0x4a5054
-      })
-    );
-
-  rock.position.set(
-    x,
-    .7,
-    z
+  g.position.set(
+    x,0,z
   );
 
-  scene.add(rock);
+  scene.add(g);
 }
 
-function createLamp(x,z){
+for(let i=0;i<45;i++){
+
+  const side =
+  Math.random()<.5 ? -1 : 1;
+
+  makeTree(
+    side*(16+Math.random()*30),
+    -110+Math.random()*220
+  );
+}
+
+/* =========================================================
+   STREET LIGHTS
+========================================================= */
+
+function makeLamp(x,z){
 
   const pole =
-    new THREE.Mesh(
-      new THREE.CylinderGeometry(
-        .08,
-        .12,
-        5,
-        6
-      ),
-      new THREE.MeshLambertMaterial({
-        color:0x25282b
-      })
-    );
+  new THREE.Mesh(
+    new THREE.CylinderGeometry(
+      .08,.12,5,8
+    ),
+    new THREE.MeshStandardMaterial({
+      color:0x292929
+    })
+  );
 
   pole.position.set(
-    x,
-    2.5,
-    z
+    x,2.5,z
   );
 
   scene.add(pole);
 
-  const lamp =
-    new THREE.Mesh(
-      new THREE.SphereGeometry(
-        .25,
-        8,
-        8
-      ),
-      new THREE.MeshBasicMaterial({
-        color:0xffd98a
-      })
-    );
-
-  lamp.position.set(
-    x,
-    5.2,
-    z
+  const light =
+  new THREE.PointLight(
+    0xffd47a,
+    2,
+    18
   );
 
-  scene.add(lamp);
+  light.position.set(
+    x,5,z
+  );
+
+  scene.add(light);
+
+  const bulb =
+  new THREE.Mesh(
+    new THREE.SphereGeometry(
+      .18,8,8
+    ),
+    new THREE.MeshBasicMaterial({
+      color:0xffe4a0
+    })
+  );
+
+  bulb.position.copy(light.position);
+
+  scene.add(bulb);
+}
+
+for(let z=-100;z<=100;z+=20){
+
+  makeLamp(-6,z);
+  makeLamp(6,z);
 }
 
 /* =========================================================
    PLAYER
 ========================================================= */
 
-function createPlayer(){
+const player =
+new THREE.Group();
 
-  player =
-    new THREE.Group();
+scene.add(player);
 
-  const body =
-    new THREE.Mesh(
-      new THREE.CapsuleGeometry(
-        .65,
-        1.5,
-        5,
-        8
-      ),
-      new THREE.MeshLambertMaterial({
-        color:0x34485b
-      })
-    );
+const playerBody =
+new THREE.Mesh(
+  new THREE.CapsuleGeometry(
+    .55,1.2,5,8
+  ),
+  new THREE.MeshStandardMaterial({
+    color:0x24384a
+  })
+);
 
-  body.position.y=1.5;
+playerBody.position.y=1.15;
+playerBody.castShadow=true;
+player.add(playerBody);
 
-  player.add(body);
+const head =
+new THREE.Mesh(
+  new THREE.SphereGeometry(
+    .4,12,10
+  ),
+  new THREE.MeshStandardMaterial({
+    color:0xd7a67e
+  })
+);
 
-  const head =
-    new THREE.Mesh(
-      new THREE.SphereGeometry(
-        .48,
-        12,
-        12
-      ),
-      new THREE.MeshLambertMaterial({
-        color:0xd7a27b
-      })
-    );
+head.position.y=2.2;
+head.castShadow=true;
+player.add(head);
 
-  head.position.y=3;
+/* backpack */
 
-  player.add(head);
+const backpack =
+new THREE.Mesh(
+  new THREE.BoxGeometry(
+    .7,1,.35
+  ),
+  new THREE.MeshStandardMaterial({
+    color:0x111820
+  })
+);
 
-  gun =
-    new THREE.Mesh(
-      new THREE.BoxGeometry(
-        .25,
-        .25,
-        1.8
-      ),
-      new THREE.MeshLambertMaterial({
-        color:0x111317
-      })
-    );
+backpack.position.set(
+  0,1.35,.5
+);
 
-  gun.position.set(
-    .55,
-    2,
-    -.85
-  );
+player.add(backpack);
 
-  gun.rotation.x =
-    -.05;
+/* GUN */
 
-  player.add(gun);
+const gun =
+new THREE.Group();
 
-  scene.add(player);
-}
+const gunBody =
+new THREE.Mesh(
+  new THREE.BoxGeometry(
+    .25,.25,1.8
+  ),
+  new THREE.MeshStandardMaterial({
+    color:0x181a1d,
+    metalness:.7,
+    roughness:.35
+  })
+);
+
+gunBody.position.z=-.7;
+
+gun.add(gunBody);
+
+const barrel =
+new THREE.Mesh(
+  new THREE.CylinderGeometry(
+    .07,.07,1.1,8
+  ),
+  new THREE.MeshStandardMaterial({
+    color:0x080909,
+    metalness:.8
+  })
+);
+
+barrel.rotation.x=Math.PI/2;
+barrel.position.z=-1.75;
+
+gun.add(barrel);
+
+const stock =
+new THREE.Mesh(
+  new THREE.BoxGeometry(
+    .28,.3,.55
+  ),
+  new THREE.MeshStandardMaterial({
+    color:0x111111
+  })
+);
+
+stock.position.z=.35;
+gun.add(stock);
+
+gun.position.set(
+  .55,1.65,-.65
+);
+
+player.add(gun);
+
+/* =========================================================
+   PLAYER STATE
+========================================================= */
+
+let hp=100;
+let maxHp=100;
+
+let ammo=120;
+const maxAmmo=120;
+
+let reloading=false;
+
+let kills=0;
+let score=0;
+let wave=1;
+
+let timeLeft=180;
+
+let gameRunning=true;
+
+let lastShot=0;
+let shootCooldown=170;
+
+let targetZombie=null;
 
 /* =========================================================
    ZOMBIES
 ========================================================= */
 
+const zombies=[];
+
 function createZombie(){
 
   const z =
-    new THREE.Group();
+  new THREE.Group();
 
   const body =
-    new THREE.Mesh(
-      new THREE.CapsuleGeometry(
-        .6,
-        1.3,
-        5,
-        8
-      ),
-      new THREE.MeshLambertMaterial({
-        color:0x58745a
-      })
-    );
+  new THREE.Mesh(
+    new THREE.CapsuleGeometry(
+      .55,1.25,5,8
+    ),
+    new THREE.MeshStandardMaterial({
+      color:0x5c8061
+    })
+  );
 
-  body.position.y=1.45;
-
+  body.position.y=1.1;
+  body.castShadow=true;
   z.add(body);
 
-  const head =
+  const h =
+  new THREE.Mesh(
+    new THREE.SphereGeometry(
+      .42,10,8
+    ),
+    new THREE.MeshStandardMaterial({
+      color:0x6e8b68
+    })
+  );
+
+  h.position.y=2.15;
+  h.castShadow=true;
+  z.add(h);
+
+  /* eyes */
+
+  const eyeMat =
+  new THREE.MeshBasicMaterial({
+    color:0xff2424
+  });
+
+  for(const ex of [-.15,.15]){
+
+    const eye =
     new THREE.Mesh(
       new THREE.SphereGeometry(
-        .47,
-        10,
-        10
+        .055,6,6
       ),
-      new THREE.MeshLambertMaterial({
-        color:0x82956e
-      })
+      eyeMat
     );
 
-  head.position.y=2.9;
-
-  z.add(head);
-
-  /* health bar */
-
-  const barBg =
-    new THREE.Mesh(
-      new THREE.PlaneGeometry(
-        1.5,
-        .16
-      ),
-      new THREE.MeshBasicMaterial({
-        color:0x300000
-      })
+    eye.position.set(
+      ex,2.23,.37
     );
 
-  barBg.position.y=4;
+    z.add(eye);
+  }
 
-  z.add(barBg);
+  /* HP bar */
+
+  const barBack =
+  new THREE.Mesh(
+    new THREE.PlaneGeometry(
+      1.4,.16
+    ),
+    new THREE.MeshBasicMaterial({
+      color:0x260000,
+      side:THREE.DoubleSide
+    })
+  );
+
+  barBack.position.y=3;
+  z.add(barBack);
 
   const bar =
-    new THREE.Mesh(
-      new THREE.PlaneGeometry(
-        1.45,
-        .11
-      ),
-      new THREE.MeshBasicMaterial({
-        color:0xff2020
-      })
-    );
+  new THREE.Mesh(
+    new THREE.PlaneGeometry(
+      1.3,.1
+    ),
+    new THREE.MeshBasicMaterial({
+      color:0xff2222,
+      side:THREE.DoubleSide
+    })
+  );
 
-  bar.position.y=4;
-
-  bar.position.z=.01;
+  bar.position.set(
+    0,3.001,.01
+  );
 
   z.add(bar);
 
-  const angle =
-    Math.random() *
-    Math.PI*2;
+  z.userData = {
+    hp:5,
+    maxHp:5,
+    speed:1.2+Math.random()*.7,
+    attack:8,
+    attackTimer:0,
+    hpBar:bar
+  };
 
-  const distance =
-    20 +
-    Math.random()*35;
+  const angle =
+  Math.random()*Math.PI*2;
+
+  const dist =
+  30+Math.random()*30;
 
   z.position.set(
-    player.position.x +
-    Math.cos(angle)*distance,
+    player.position.x+
+    Math.sin(angle)*dist,
     0,
-    player.position.z +
-    Math.sin(angle)*distance
+    player.position.z+
+    Math.cos(angle)*dist
   );
-
-  const maxHp =
-    5 +
-    Math.floor(
-      wave/4
-    );
-
-  z.userData = {
-    hp:maxHp,
-    maxHp:maxHp,
-    speed:
-      1.0 +
-      Math.min(
-        wave*.03,
-        2
-      ),
-    bar:bar,
-    dead:false
-  };
 
   scene.add(z);
 
   zombies.push(z);
 }
 
-function removeZombie(z){
+function spawnWave(){
 
-  scene.remove(z);
+  const amount =
+  Math.min(
+    5 + wave*2,
+    35
+  );
 
-  const i =
-    zombies.indexOf(z);
-
-  if(i>=0)
-    zombies.splice(i,1);
+  for(let i=0;i<amount;i++){
+    createZombie();
+  }
 }
 
 /* =========================================================
-   TARGET
+   REMOVE ZOMBIE
+========================================================= */
+
+function killZombie(z){
+
+  const index =
+  zombies.indexOf(z);
+
+  if(index>=0)
+    zombies.splice(index,1);
+
+  scene.remove(z);
+
+  kills++;
+  score+=100;
+
+  if(kills%10===0){
+    wave++;
+  }
+
+  updateHUD();
+}
+
+/* =========================================================
+   AUTO TARGET
 ========================================================= */
 
 function findTarget(){
 
   let best=null;
-  let bestDistance=9999;
+  let bestScore=-999;
+
+  const forward =
+  new THREE.Vector3(0,0,-1);
+
+  forward.applyQuaternion(
+    player.quaternion
+  );
 
   for(const z of zombies){
 
-    if(z.userData.dead)
+    const dir =
+    new THREE.Vector3()
+    .subVectors(
+      z.position,
+      player.position
+    );
+
+    const distance =
+    dir.length();
+
+    if(distance>35)
       continue;
 
-    const d =
-      player.position.distanceTo(
-        z.position
-      );
+    dir.normalize();
 
-    if(
-      d<bestDistance &&
-      d<35
-    ){
+    const dot =
+    forward.dot(dir);
+
+    if(dot<.35)
+      continue;
+
+    const value =
+    dot*2 - distance*.025;
+
+    if(value>bestScore){
+
+      bestScore=value;
       best=z;
-      bestDistance=d;
     }
   }
 
-  return best;
+  targetZombie=best;
+
+  crosshair.classList.toggle(
+    "locked",
+    !!targetZombie
+  );
 }
 
 /* =========================================================
@@ -1538,11 +1312,15 @@ function shoot(){
   if(!gameRunning)
     return;
 
-  if(
-    reloadTimer>0 ||
-    shootCooldown>0
-  )
+  if(reloading)
     return;
+
+  const now=performance.now();
+
+  if(now-lastShot<shootCooldown)
+    return;
+
+  lastShot=now;
 
   if(ammo<=0){
 
@@ -1552,185 +1330,136 @@ function shoot(){
 
   ammo--;
 
-  shootCooldown=.16;
+  /* target */
 
-  gunSound();
+  findTarget();
 
-  targetZombie =
-    findTarget();
+  if(targetZombie){
 
-  if(!targetZombie){
+    const z=targetZombie;
 
-    updateUI();
-    return;
-  }
+    const headshot =
+      Math.random()<.2;
 
-  const distance =
-    player.position.distanceTo(
-      targetZombie.position
-    );
+    const damage =
+      headshot ? 3 : 1;
 
-  /* damage */
+    z.userData.hp -= damage;
 
-  let damage =
-    rageActive ? 2 : 1;
+    const ratio =
+      Math.max(
+        0,
+        z.userData.hp /
+        z.userData.maxHp
+      );
 
-  const headDistance =
-    Math.abs(
-      player.position.y + 2.8 -
-      targetZombie.position.y
-    );
+    z.userData.hpBar.scale.x =
+      ratio;
 
-  const headshot =
-    distance<25 &&
-    headDistance<1.4 &&
-    Math.random()<.28;
+    if(headshot){
 
-  if(headshot){
+      showNotice(
+        "💥 HEADSHOT!"
+      );
 
-    damage*=2;
+      score+=50;
+    }
 
-    createHitEffect(
-      targetZombie.position,
-      0xff2222
-    );
+    createTracer(z);
+
+    if(z.userData.hp<=0){
+
+      killZombie(z);
+    }
 
   }else{
 
-    createHitEffect(
-      targetZombie.position,
-      0xffff44
-    );
+    createTracer();
   }
 
-  targetZombie.userData.hp -=
-    damage;
+  gunKick();
 
-  targetZombie.userData.bar.scale.x =
-    Math.max(
-      0,
-      targetZombie.userData.hp /
-      targetZombie.userData.maxHp
-    );
-
-  hitSound();
-
-  if(
-    targetZombie.userData.hp<=0
-  ){
-
-    killZombie(
-      targetZombie,
-      headshot
-    );
-  }
-
-  updateUI();
-}
-
-function killZombie(
-  z,
-  headshot=false
-){
-
-  z.userData.dead=true;
-
-  kills++;
-  missionKills++;
-
-  score +=
-    headshot
-      ? 200
-      : 100;
-
-  createHitEffect(
-    z.position,
-    0xff3333
-  );
-
-  setTimeout(()=>{
-    removeZombie(z);
-  },120);
-
-  if(
-    missionKills>=missionTarget
-  ){
-
-    winGame();
-
-    return;
-  }
-
-  if(
-    missionKills%10===0
-  ){
-
-    wave++;
-
-    waveEl.textContent =
-      wave;
-  }
-
-  broadcastKill();
+  updateHUD();
 }
 
 /* =========================================================
-   HIT EFFECT
+   TRACER
 ========================================================= */
 
-function createHitEffect(
-  position,
-  color
-){
+function createTracer(z){
 
-  const mat =
-    new THREE.MeshBasicMaterial({
-      color,
-      transparent:true
-    });
+  const start =
+  new THREE.Vector3();
 
-  const mesh =
-    new THREE.Mesh(
-      new THREE.SphereGeometry(
-        .12,
-        6,
-        6
-      ),
-      mat
+  gun.getWorldPosition(start);
+
+  let end;
+
+  if(z){
+
+    end =
+    z.position.clone();
+
+    end.y+=1.4;
+
+  }else{
+
+    const dir =
+    new THREE.Vector3(
+      0,0,-1
     );
 
-  mesh.position.copy(
-    position
-  );
-
-  scene.add(mesh);
-
-  let life=0;
-
-  function tick(){
-
-    life+=.05;
-
-    mesh.scale.multiplyScalar(
-      1.12
+    dir.applyQuaternion(
+      player.quaternion
     );
 
-    mat.opacity =
-      1-life;
-
-    if(life<1){
-
-      requestAnimationFrame(
-        tick
-      );
-
-    }else{
-
-      scene.remove(mesh);
-    }
+    end =
+    start.clone()
+    .add(
+      dir.multiplyScalar(30)
+    );
   }
 
-  tick();
+  const distance =
+  start.distanceTo(end);
+
+  const tracer =
+  new THREE.Mesh(
+    new THREE.CylinderGeometry(
+      .025,.025,distance,5
+    ),
+    new THREE.MeshBasicMaterial({
+      color:0xffe58a
+    })
+  );
+
+  tracer.position.copy(
+    start.clone().lerp(end,.5)
+  );
+
+  tracer.quaternion.setFromUnitVectors(
+    new THREE.Vector3(0,1,0),
+    end.clone().sub(start).normalize()
+  );
+
+  scene.add(tracer);
+
+  setTimeout(()=>{
+    scene.remove(tracer);
+  },60);
+}
+
+/* =========================================================
+   GUN KICK
+========================================================= */
+
+let gunKickTime=0;
+
+function gunKick(){
+
+  gun.position.z=-.85;
+
+  gunKickTime=1;
 }
 
 /* =========================================================
@@ -1739,173 +1468,24 @@ function createHitEffect(
 
 function reload(){
 
-  if(
-    ammo>=120 ||
-    reloadTimer>0
-  )
+  if(reloading)
     return;
 
-  reloadTimer=1.2;
-
-  reloadSound();
-
-  toastMessage(
-    "🔄 Đang nạp đạn..."
-  );
-}
-
-/* =========================================================
-   RAGE
-========================================================= */
-
-function useRage(){
-
-  if(!gameRunning)
+  if(ammo>=maxAmmo)
     return;
 
-  if(rageActive)
-    return;
+  reloading=true;
 
-  rageActive=true;
-  rageTimer=8;
+  showNotice("🔄 ĐANG NẠP ĐẠN...");
 
-  toastMessage(
-    "🔥 RAGE ACTIVATED!"
-  );
-}
+  setTimeout(()=>{
 
-/* =========================================================
-   UPDATE GAME
-========================================================= */
+    ammo=maxAmmo;
+    reloading=false;
 
-function updateGame(dt){
+    updateHUD();
 
-  if(!gameRunning)
-    return;
-
-  shootCooldown =
-    Math.max(
-      0,
-      shootCooldown-dt
-    );
-
-  if(
-    reloadTimer>0
-  ){
-
-    reloadTimer -= dt;
-
-    if(
-      reloadTimer<=0
-    ){
-
-      ammo=120;
-
-      toastMessage(
-        "🔫 Đã nạp đầy đạn"
-      );
-    }
-  }
-
-  if(rageActive){
-
-    rageTimer-=dt;
-
-    if(rageTimer<=0){
-
-      rageActive=false;
-
-      toastMessage(
-        "Rage kết thúc"
-      );
-    }
-  }
-
-  updatePlayer(dt);
-  updateZombies(dt);
-
-  if(isHost)
-    updateHostNetwork(dt);
-
-  updateRemotePlayers();
-
-  updateCamera();
-
-  targetZombie =
-    findTarget();
-
-  crosshair.classList.toggle(
-    "locked",
-    !!targetZombie
-  );
-
-  updateUI();
-}
-
-/* =========================================================
-   PLAYER MOVEMENT
-========================================================= */
-
-let joyX=0;
-let joyY=0;
-
-let cameraAngle=0;
-
-function updatePlayer(dt){
-
-  const speed =
-    rageActive
-      ? 9
-      : 5;
-
-  const moveX =
-    joyX;
-
-  const moveZ =
-    joyY;
-
-  const forwardX =
-    Math.sin(cameraAngle);
-
-  const forwardZ =
-    Math.cos(cameraAngle);
-
-  const rightX =
-    Math.cos(cameraAngle);
-
-  const rightZ =
-    -Math.sin(cameraAngle);
-
-  player.position.x +=
-    (
-      forwardX*moveZ +
-      rightX*moveX
-    ) *
-    speed *
-    dt;
-
-  player.position.z +=
-    (
-      forwardZ*moveZ +
-      rightZ*moveX
-    ) *
-    speed *
-    dt;
-
-  /* player direction */
-
-  if(
-    Math.abs(moveX)+
-    Math.abs(moveZ)>.1
-  ){
-
-    player.rotation.y =
-      Math.atan2(
-        moveX,
-        moveZ
-      ) +
-      cameraAngle;
-  }
+  },1200);
 }
 
 /* =========================================================
@@ -1914,73 +1494,66 @@ function updatePlayer(dt){
 
 function updateZombies(dt){
 
-  for(
-    const z of zombies
-  ){
+  for(const z of [...zombies]){
 
-    if(z.userData.dead)
-      continue;
-
-    const dx =
-      player.position.x -
-      z.position.x;
-
-    const dz =
-      player.position.z -
-      z.position.z;
+    const dir =
+    new THREE.Vector3()
+    .subVectors(
+      player.position,
+      z.position
+    );
 
     const distance =
-      Math.sqrt(
-        dx*dx+
-        dz*dz
+    dir.length();
+
+    if(distance>.01)
+      dir.normalize();
+
+    if(distance>1.8){
+
+      z.position.add(
+        dir.multiplyScalar(
+          z.userData.speed*dt
+        )
       );
 
-    if(distance>.1){
+      z.lookAt(
+        player.position.x,
+        1,
+        player.position.z
+      );
 
-      z.position.x +=
-        dx/distance *
-        z.userData.speed *
-        dt;
+    }else{
 
-      z.position.z +=
-        dz/distance *
-        z.userData.speed *
-        dt;
+      z.userData.attackTimer -= dt;
 
-      z.rotation.y =
-        Math.atan2(
-          dx,
-          dz
-        );
-    }
+      if(z.userData.attackTimer<=0){
 
-    /* attack */
+        z.userData.attackTimer=.9;
 
-    if(distance<1.7){
+        hp -= z.userData.attack;
 
-      if(
-        Math.random()<dt*.7
-      ){
+        if(hp<0)
+          hp=0;
 
-        hp -=
-          8;
+        updateHUD();
 
         if(hp<=0){
 
-          hp=0;
+          endGame(false);
 
-          loseGame();
+          return;
         }
       }
     }
 
-    /* health bar faces camera */
+    /* HP bar always face camera */
 
-    if(z.userData.bar){
+    const bar =
+    z.userData.hpBar;
 
-      z.userData.bar.parent.rotation.y =
-        camera.rotation.y;
-    }
+    if(bar)
+      bar.lookAt(camera.position);
   }
 }
 
@@ -1988,1057 +1561,40 @@ function updateZombies(dt){
    CAMERA
 ========================================================= */
 
+let cameraYaw=0;
+let cameraPitch=.15;
+
 function updateCamera(){
 
-  const distance=8;
+  const distance=7;
 
-  const height=4.5;
+  const height=4;
 
-  camera.position.x =
-    player.position.x -
-    Math.sin(cameraAngle)*
-    distance;
+  const x =
+  player.position.x -
+  Math.sin(cameraYaw)*distance;
 
-  camera.position.z =
-    player.position.z -
-    Math.cos(cameraAngle)*
-    distance;
+  const z =
+  player.position.z -
+  Math.cos(cameraYaw)*distance;
 
-  camera.position.y =
-    player.position.y+
-    height;
+  camera.position.lerp(
+    new THREE.Vector3(
+      x,
+      player.position.y+height,
+      z
+    ),
+    .15
+  );
 
   camera.lookAt(
     player.position.x,
-    2,
+    1.4,
     player.position.z
   );
-}
 
-/* =========================================================
-   REMOTE PLAYERS
-========================================================= */
-
-function createRemotePlayer(data){
-
-  if(remotePlayers[data.player_id])
-    return remotePlayers[data.player_id];
-
-  const p =
-    new THREE.Group();
-
-  const body =
-    new THREE.Mesh(
-      new THREE.CapsuleGeometry(
-        .6,
-        1.4,
-        5,
-        8
-      ),
-      new THREE.MeshLambertMaterial({
-        color:0x3b65ff
-      })
-    );
-
-  body.position.y=1.5;
-
-  p.add(body);
-
-  const head =
-    new THREE.Mesh(
-      new THREE.SphereGeometry(
-        .45,
-        10,
-        10
-      ),
-      new THREE.MeshLambertMaterial({
-        color:0xd6a07b
-      })
-    );
-
-  head.position.y=2.9;
-
-  p.add(head);
-
-  scene.add(p);
-
-  remotePlayers[
-    data.player_id
-  ] = {
-    mesh:p,
-    data:data
-  };
-
-  return remotePlayers[
-    data.player_id
-  ];
-}
-
-function updateRemotePlayers(){
-
-  for(
-    const id in remotePlayers
-  ){
-
-    const rp =
-      remotePlayers[id];
-
-    if(!rp.data)
-      continue;
-
-    rp.mesh.position.lerp(
-      new THREE.Vector3(
-        rp.data.x,
-        rp.data.y,
-        rp.data.z
-      ),
-      .25
-    );
-
-    rp.mesh.rotation.y =
-      rp.data.rotation || 0;
-  }
-}
-
-/* =========================================================
-   NETWORK
-========================================================= */
-
-let networkTimer=0;
-
-function updateHostNetwork(dt){
-
-  networkTimer += dt;
-
-  if(
-    networkTimer<.12
-  )
-    return;
-
-  networkTimer=0;
-
-  broadcastWorld();
-}
-
-async function updateOwnPlayer(){
-
-  if(!currentRoomId)
-    return;
-
-  await supabase
-    .from("room_players")
-    .upsert({
-      room_id:currentRoomId,
-      player_id:playerId,
-      player_name:playerName,
-      x:player.position.x,
-      y:player.position.y,
-      z:player.position.z,
-      rotation:player.rotation.y,
-      hp:hp,
-      kills:kills,
-      score:score,
-      stars:stars,
-      is_alive:hp>0,
-      last_seen:new Date().toISOString()
-    },{
-      onConflict:
-        "room_id,player_id"
-    });
-}
-
-/* =========================================================
-   CREATE ROOM
-========================================================= */
-
-function randomRoomCode(){
-
-  const chars =
-    "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-
-  let code="";
-
-  for(let i=0;i<6;i++){
-
-    code +=
-      chars[
-        Math.floor(
-          Math.random()*
-          chars.length
-        )
-      ];
-  }
-
-  return code;
-}
-
-async function createRoom(){
-
-  playerName =
-    playerNameInput.value.trim()
-    || "Player";
-
-  saveProgress();
-
-  const code =
-    randomRoomCode();
-
-  const {data,error} =
-    await supabase
-      .from("rooms")
-      .insert({
-        room_code:code,
-        host_name:playerName,
-        status:"waiting",
-        mission_target:
-          getMissionTarget(matchNumber),
-        mission_kills:0,
-        wave:1,
-        time_left:180
-      })
-      .select()
-      .single();
-
-  if(error){
-
-    console.error(error);
-
-    toastMessage(
-      "❌ Không tạo được phòng"
-    );
-
-    return;
-  }
-
-  currentRoomId =
-    data.id;
-
-  currentRoomCode =
-    data.room_code;
-
-  isHost=true;
-
-  await joinRoomPlayer();
-
-  openRoom();
-
-  subscribeRoom();
-}
-
-/* =========================================================
-   JOIN ROOM
-========================================================= */
-
-async function joinRoom(){
-
-  playerName =
-    playerNameInput.value.trim()
-    || "Player";
-
-  const code =
-    roomCodeInput.value
-      .trim()
-      .toUpperCase();
-
-  if(code.length!==6){
-
-    toastMessage(
-      "⚠️ Mã phòng phải có 6 ký tự"
-    );
-
-    return;
-  }
-
-  const {data,error} =
-    await supabase
-      .from("rooms")
-      .select("*")
-      .eq("room_code",code)
-      .eq("status","waiting")
-      .maybeSingle();
-
-  if(error || !data){
-
-    toastMessage(
-      "❌ Không tìm thấy phòng"
-    );
-
-    return;
-  }
-
-  const {count} =
-    await supabase
-      .from("room_players")
-      .select(
-        "*",
-        {
-          count:"exact",
-          head:true
-        }
-      )
-      .eq("room_id",data.id);
-
-  if(
-    count>=4
-  ){
-
-    toastMessage(
-      "❌ Phòng đã đủ 4 người"
-    );
-
-    return;
-  }
-
-  currentRoomId =
-    data.id;
-
-  currentRoomCode =
-    data.room_code;
-
-  isHost=false;
-
-  await joinRoomPlayer();
-
-  openRoom();
-
-  subscribeRoom();
-}
-
-/* =========================================================
-   JOIN PLAYER
-========================================================= */
-
-async function joinRoomPlayer(){
-
-  const {error} =
-    await supabase
-      .from("room_players")
-      .upsert({
-        room_id:currentRoomId,
-        player_id:playerId,
-        player_name:playerName,
-        x:0,
-        y:0,
-        z:20,
-        rotation:0,
-        hp:100,
-        kills:0,
-        score:0,
-        stars:stars,
-        is_alive:true
-      },{
-        onConflict:
-          "room_id,player_id"
-      });
-
-  if(error)
-    console.error(error);
-}
-
-/* =========================================================
-   OPEN ROOM
-========================================================= */
-
-async function openRoom(){
-
-  menu.classList.add(
-    "hidden"
-  );
-
-  gameover.classList.add(
-    "hidden"
-  );
-
-  roomPanel.classList.remove(
-    "hidden"
-  );
-
-  roomCodeEl.textContent =
-    currentRoomCode;
-
-  await refreshRoomPlayers();
-}
-
-/* =========================================================
-   REFRESH ROOM
-========================================================= */
-
-async function refreshRoomPlayers(){
-
-  if(!currentRoomId)
-    return;
-
-  const {data,error} =
-    await supabase
-      .from("room_players")
-      .select("*")
-      .eq("room_id",currentRoomId)
-      .order("created_at");
-
-  if(error)
-    return;
-
-  roomPlayersEl.innerHTML="";
-
-  for(
-    const p of data || []
-  ){
-
-    const div =
-      document.createElement(
-        "div"
-      );
-
-    div.className =
-      "playerRow";
-
-    div.textContent =
-      (
-        p.player_id===playerId
-          ? "👑 "
-          : "👤 "
-      ) +
-      p.player_name;
-
-    roomPlayersEl.appendChild(
-      div
-    );
-
-    if(
-      p.player_id!==playerId
-    ){
-
-      createRemotePlayer(p);
-    }
-  }
-
-  roomStatusEl.textContent =
-    `${data.length}/4 người trong phòng`;
-}
-
-/* =========================================================
-   REALTIME
-========================================================= */
-
-function subscribeRoom(){
-
-  if(roomChannel){
-
-    supabase.removeChannel(
-      roomChannel
-    );
-  }
-
-  roomChannel =
-    supabase.channel(
-      "room-"+currentRoomId
-    );
-
-  roomChannel
-    .on(
-      "postgres_changes",
-      {
-        event:"*",
-        schema:"public",
-        table:"room_players",
-        filter:
-          "room_id=eq."+currentRoomId
-      },
-      payload => {
-
-        refreshRoomPlayers();
-
-        if(
-          payload.new &&
-          payload.new.player_id &&
-          payload.new.player_id!==playerId
-        ){
-
-          const rp =
-            createRemotePlayer(
-              payload.new
-            );
-
-          rp.data =
-            payload.new;
-        }
-      }
-    )
-    .on(
-      "postgres_changes",
-      {
-        event:"UPDATE",
-        schema:"public",
-        table:"rooms",
-        filter:
-          "id=eq."+currentRoomId
-      },
-      payload => {
-
-        if(
-          payload.new.status===
-          "playing" &&
-          !gameRunning
-        ){
-
-          startGame();
-        }
-
-        if(
-          payload.new.status===
-          "finished"
-        ){
-
-          gameRunning=false;
-        }
-      }
-    )
-    .on(
-      "broadcast",
-      {
-        event:"world"
-      },
-      payload => {
-
-        if(
-          !isHost &&
-          payload.payload
-        ){
-
-          receiveWorld(
-            payload.payload
-          );
-        }
-      }
-    )
-    .on(
-      "broadcast",
-      {
-        event:"kill"
-      },
-      payload => {
-
-        if(
-          !isHost &&
-          payload.payload
-        ){
-
-          missionKills =
-            Math.max(
-              missionKills,
-              payload.payload.missionKills
-            );
-
-          killsEl.textContent =
-            missionKills;
-        }
-      }
-    )
-    .subscribe();
-}
-
-/* =========================================================
-   BROADCAST WORLD
-========================================================= */
-
-async function broadcastWorld(){
-
-  if(
-    !roomChannel ||
-    !isHost
-  )
-    return;
-
-  const world = {
-
-    zombies:
-      zombies
-        .filter(
-          z => !z.userData.dead
-        )
-        .slice(0,50)
-        .map(
-          z => ({
-            x:z.position.x,
-            z:z.position.z,
-            hp:z.userData.hp,
-            maxHp:z.userData.maxHp
-          })
-        ),
-
-    missionKills,
-    wave,
-    timeLeft
-  };
-
-  await roomChannel.send({
-    type:"broadcast",
-    event:"world",
-    payload:world
-  });
-}
-
-function receiveWorld(data){
-
-  missionKills =
-    data.missionKills;
-
-  wave =
-    data.wave;
-
-  timeLeft =
-    data.timeLeft;
-
-  /*
-   * Đồng bộ zombie đơn giản.
-   * Host là người điều khiển trạng thái chính.
-   */
-
-  if(
-    zombies.length<
-    data.zombies.length
-  ){
-
-    while(
-      zombies.length<
-      data.zombies.length
-    ){
-
-      createZombie();
-    }
-  }
-
-  while(
-    zombies.length>
-    data.zombies.length
-  ){
-
-    removeZombie(
-      zombies[
-        zombies.length-1
-      ]
-    );
-  }
-
-  data.zombies.forEach(
-    (zd,i)=>{
-
-      const z =
-        zombies[i];
-
-      if(!z)
-        return;
-
-      z.position.x =
-        zd.x;
-
-      z.position.z =
-        zd.z;
-
-      z.userData.hp =
-        zd.hp;
-
-      z.userData.maxHp =
-        zd.maxHp;
-
-      z.userData.bar.scale.x =
-        Math.max(
-          0,
-          zd.hp/zd.maxHp
-        );
-    }
-  );
-}
-
-async function broadcastKill(){
-
-  if(
-    !roomChannel
-  )
-    return;
-
-  await roomChannel.send({
-    type:"broadcast",
-    event:"kill",
-    payload:{
-      missionKills
-    }
-  });
-}
-
-/* =========================================================
-   START GAME
-========================================================= */
-
-async function startRoomGame(){
-
-  if(!isHost)
-    return;
-
-  const {error} =
-    await supabase
-      .from("rooms")
-      .update({
-        status:"playing",
-        mission_target:
-          getMissionTarget(matchNumber),
-        mission_kills:0,
-        wave:1,
-        time_left:180
-      })
-      .eq("id",currentRoomId);
-
-  if(error){
-
-    console.error(error);
-
-    toastMessage(
-      "❌ Không bắt đầu được"
-    );
-
-    return;
-  }
-
-  startGame();
-}
-
-/* =========================================================
-   START
-========================================================= */
-
-function startGame(){
-
-  roomPanel.classList.add(
-    "hidden"
-  );
-
-  menu.classList.add(
-    "hidden"
-  );
-
-  gameover.classList.add(
-    "hidden"
-  );
-
-  hud.classList.remove(
-    "hidden"
-  );
-
-  gameRunning=true;
-
-  hp=100;
-  ammo=120;
-  kills=0;
-  score=0;
-  wave=1;
-  missionKills=0;
-
-  missionTarget =
-    getMissionTarget(
-      matchNumber
-    );
-
-  timeLeft=180;
-
-  player.position.set(
-    0,
-    0,
-    20
-  );
-
-  zombies.forEach(
-    z => scene.remove(z)
-  );
-
-  zombies=[];
-
-  for(let i=0;i<6;i++)
-    createZombie();
-
-  updateRankUI();
-  updateUI();
-}
-
-/* =========================================================
-   TIMER
-========================================================= */
-
-let timerAccumulator=0;
-
-function updateTimer(dt){
-
-  if(!gameRunning)
-    return;
-
-  timerAccumulator += dt;
-
-  if(
-    timerAccumulator<1
-  )
-    return;
-
-  timerAccumulator=0;
-
-  timeLeft--;
-
-  if(
-    isHost
-  ){
-
-    supabase
-      .from("rooms")
-      .update({
-        time_left:timeLeft,
-        mission_kills:missionKills,
-        wave:wave
-      })
-      .eq(
-        "id",
-        currentRoomId
-      )
-      .then(()=>{});
-  }
-
-  if(
-    timeLeft<=0
-  ){
-
-    if(
-      missionKills>=missionTarget
-    ){
-
-      winGame();
-
-    }else{
-
-      loseGame();
-    }
-  }
-}
-
-/* =========================================================
-   WIN
-========================================================= */
-
-async function winGame(){
-
-  if(!gameRunning)
-    return;
-
-  gameRunning=false;
-
-  stars++;
-
-  matchNumber++;
-
-  saveProgress();
-
-  updateRankUI();
-
-  if(
-    currentRoomId
-  ){
-
-    await supabase
-      .from("room_players")
-      .update({
-        stars:stars,
-        score:score,
-        kills:kills,
-        hp:hp,
-        is_alive:true
-      })
-      .eq(
-        "room_id",
-        currentRoomId
-      )
-      .eq(
-        "player_id",
-        playerId
-      );
-  }
-
-  saveScore();
-
-  document.getElementById(
-    "resultTitle"
-  ).textContent =
-    "🏆 CHIẾN THẮNG!";
-
-  document.getElementById(
-    "resultScore"
-  ).textContent =
-    "⭐ +1 SAO";
-
-  document.getElementById(
-    "resultInfo"
-  ).innerHTML =
-    `
-      Nhiệm vụ: ${missionKills}/${missionTarget}<br>
-      Rank: <b>${getRank(stars)}</b><br>
-      Tổng sao: <b>${stars>=999?"999+":stars}</b>
-    `;
-
-  gameover.classList.remove(
-    "hidden"
-  );
-
-  hud.classList.add(
-    "hidden"
-  );
-
-  if(
-    isHost &&
-    currentRoomId
-  ){
-
-    await supabase
-      .from("rooms")
-      .update({
-        status:"finished"
-      })
-      .eq(
-        "id",
-        currentRoomId
-      );
-  }
-}
-
-/* =========================================================
-   LOSE
-========================================================= */
-
-async function loseGame(){
-
-  if(!gameRunning)
-    return;
-
-  gameRunning=false;
-
-  document.getElementById(
-    "resultTitle"
-  ).textContent =
-    "💀 THẤT BẠI";
-
-  document.getElementById(
-    "resultScore"
-  ).textContent =
-    score;
-
-  document.getElementById(
-    "resultInfo"
-  ).innerHTML =
-    `
-      Hạ: ${kills}<br>
-      Nhiệm vụ: ${missionKills}/${missionTarget}<br>
-      ⭐ ${stars>=999?"999+":stars}
-    `;
-
-  gameover.classList.remove(
-    "hidden"
-  );
-
-  hud.classList.add(
-    "hidden"
-  );
-}
-
-/* =========================================================
-   SCORE
-========================================================= */
-
-async function saveScore(){
-
-  try{
-
-    await supabase
-      .from("scores")
-      .insert({
-        name:playerName,
-        score:score,
-        kills:kills,
-        wave:wave
-      });
-
-  }catch(e){
-
-    console.log(e);
-  }
-}
-
-/* =========================================================
-   UI
-========================================================= */
-
-function updateUI(){
-
-  starsEl.textContent =
-    stars>=999
-      ? "999+"
-      : stars;
-
-  rankEl.textContent =
-    getRank(stars);
-
-  killsEl.textContent =
-    kills;
-
-  waveEl.textContent =
-    wave;
-
-  timerEl.textContent =
-    Math.max(
-      0,
-      timeLeft
-    );
-
-  missionTextEl.textContent =
-    missionKills +
-    " / " +
-    missionTarget;
-
-  hpNumberEl.textContent =
-    Math.max(
-      0,
-      Math.floor(hp)
-    );
-
-  hpFillEl.style.width =
-    Math.max(
-      0,
-      hp
-    ) +
-    "%";
-
-  ammoNumberEl.textContent =
-    ammo;
-}
-
-/* =========================================================
-   TOAST
-========================================================= */
-
-let toastTimer;
-
-function toastMessage(text){
-
-  toast.textContent =
-    text;
-
-  toast.classList.add(
-    "show"
-  );
-
-  clearTimeout(
-    toastTimer
-  );
-
-  toastTimer =
-    setTimeout(()=>{
-      toast.classList.remove(
-        "show"
-      );
-    },1800);
+  player.rotation.y =
+    cameraYaw;
 }
 
 /* =========================================================
@@ -3046,135 +1602,79 @@ function toastMessage(text){
 ========================================================= */
 
 const joystick =
-document.getElementById(
-  "joystick"
-);
+document.getElementById("joystick");
 
 const stick =
-document.getElementById(
-  "stick"
-);
+document.getElementById("stick");
 
-let joyTouchId=null;
+let joyX=0;
+let joyY=0;
 
-function joystickMove(
-  clientX,
-  clientY
-){
+let joyActive=false;
 
-  const r =
-    joystick.getBoundingClientRect();
+function updateJoy(e){
+
+  const rect =
+  joystick.getBoundingClientRect();
 
   const cx =
-    r.left+r.width/2;
+  rect.left+rect.width/2;
 
   const cy =
-    r.top+r.height/2;
+  rect.top+rect.height/2;
 
   let dx =
-    clientX-cx;
+  e.clientX-cx;
 
   let dy =
-    clientY-cy;
+  e.clientY-cy;
 
-  const max =
-    r.width*.35;
+  const max=38;
 
   const len =
-    Math.sqrt(
-      dx*dx+
-      dy*dy
-    );
+  Math.hypot(dx,dy);
 
   if(len>max){
 
-    dx =
+    dx=
       dx/len*max;
 
-    dy =
+    dy=
       dy/len*max;
   }
 
-  stick.style.transform =
+  joyX=dx/max;
+  joyY=dy/max;
+
+  stick.style.transform=
     `translate(${dx}px,${dy}px)`;
-
-  joyX =
-    dx/max;
-
-  /*
-   * Kéo joystick lên = tiến về phía trước.
-   */
-
-  joyY =
-    -dy/max;
 }
 
 joystick.addEventListener(
-  "touchstart",
-  e => {
-
-    e.preventDefault();
-
-    joyTouchId =
-      e.changedTouches[0].identifier;
-
-    const t =
-      e.changedTouches[0];
-
-    joystickMove(
-      t.clientX,
-      t.clientY
-    );
-  },
-  {passive:false}
+  "pointerdown",
+  e=>{
+    joyActive=true;
+    joystick.setPointerCapture(e.pointerId);
+    updateJoy(e);
+  }
 );
 
 joystick.addEventListener(
-  "touchmove",
-  e => {
-
-    e.preventDefault();
-
-    for(
-      const t of e.changedTouches
-    ){
-
-      if(
-        t.identifier===
-        joyTouchId
-      ){
-
-        joystickMove(
-          t.clientX,
-          t.clientY
-        );
-      }
-    }
-  },
-  {passive:false}
+  "pointermove",
+  e=>{
+    if(joyActive)
+      updateJoy(e);
+  }
 );
 
 joystick.addEventListener(
-  "touchend",
-  e => {
-
-    for(
-      const t of e.changedTouches
-    ){
-
-      if(
-        t.identifier===
-        joyTouchId
-      ){
-
-        joyTouchId=null;
-        joyX=0;
-        joyY=0;
-
-        stick.style.transform =
-          "translate(0,0)";
-      }
-    }
+  "pointerup",
+  ()=>{
+    joyActive=false;
+    joyX=0;
+    joyY=0;
+    stick.style.transform=
+      "translate(0,0)";
   }
 );
 
@@ -3182,322 +1682,625 @@ joystick.addEventListener(
    CAMERA SWIPE
 ========================================================= */
 
-let cameraTouchId=null;
-let lastCameraX=0;
+let swipe=false;
+let lastX=0;
 
-rendererReadyCamera();
+renderer.domElement.addEventListener(
+  "pointerdown",
+  e=>{
+    swipe=true;
+    lastX=e.clientX;
+  }
+);
 
-function rendererReadyCamera(){
+renderer.domElement.addEventListener(
+  "pointermove",
+  e=>{
 
-  document.addEventListener(
-    "touchstart",
-    e => {
+    if(!swipe)
+      return;
 
-      for(
-        const t of e.changedTouches
-      ){
+    const dx =
+    e.clientX-lastX;
 
-        if(
-          t.clientX >
-          innerWidth*.45 &&
-          t.clientY <
-          innerHeight*.8
-        ){
+    lastX=e.clientX;
 
-          cameraTouchId =
-            t.identifier;
+    cameraYaw -= dx*.008;
+  }
+);
 
-          lastCameraX =
-            t.clientX;
-        }
-      }
-    },
-    {passive:false}
-  );
+renderer.domElement.addEventListener(
+  "pointerup",
+  ()=>{
+    swipe=false;
+  }
+);
 
-  document.addEventListener(
-    "touchmove",
-    e => {
+/* =========================================================
+   FIRE BUTTON
+========================================================= */
 
-      if(
-        cameraTouchId===null
-      )
-        return;
+const fire =
+document.getElementById("fire");
 
-      for(
-        const t of e.changedTouches
-      ){
+fire.addEventListener(
+  "pointerdown",
+  e=>{
+    e.preventDefault();
+    shoot();
+  }
+);
 
-        if(
-          t.identifier===
-          cameraTouchId
-        ){
+/* =========================================================
+   RELOAD BUTTON
+========================================================= */
 
-          const dx =
-            t.clientX-
-            lastCameraX;
+document.getElementById(
+  "reload"
+).addEventListener(
+  "pointerdown",
+  e=>{
+    e.preventDefault();
+    reload();
+  }
+);
 
-          cameraAngle -=
-            dx*.006;
+/* =========================================================
+   KEYBOARD
+========================================================= */
 
-          lastCameraX =
-            t.clientX;
-        }
-      }
-    },
-    {passive:false}
-  );
+const keys={};
 
-  document.addEventListener(
-    "touchend",
-    e => {
+addEventListener(
+  "keydown",
+  e=>{
+    keys[e.key.toLowerCase()]=true;
 
-      for(
-        const t of e.changedTouches
-      ){
+    if(e.key==="r")
+      reload();
 
-        if(
-          t.identifier===
-          cameraTouchId
-        ){
+    if(e.code==="Space")
+      shoot();
+  }
+);
 
-          cameraTouchId=null;
-        }
-      }
-    }
-  );
+addEventListener(
+  "keyup",
+  e=>{
+    keys[e.key.toLowerCase()]=false;
+  }
+);
+
+/* =========================================================
+   PLAYER MOVEMENT
+========================================================= */
+
+function updatePlayer(dt){
+
+  let forward =
+    -joyY;
+
+  let side =
+    joyX;
+
+  if(keys.w)
+    forward=1;
+
+  if(keys.s)
+    forward=-1;
+
+  if(keys.a)
+    side=-1;
+
+  if(keys.d)
+    side=1;
+
+  const speed=5;
+
+  const dir =
+  new THREE.Vector3();
+
+  dir.z += forward;
+  dir.x += side;
+
+  if(dir.lengthSq()>0){
+
+    dir.normalize();
+
+    const angle =
+    cameraYaw;
+
+    const rx =
+    dir.x*Math.cos(angle) -
+    dir.z*Math.sin(angle);
+
+    const rz =
+    dir.x*Math.sin(angle) +
+    dir.z*Math.cos(angle);
+
+    player.position.x +=
+      rx*speed*dt;
+
+    player.position.z +=
+      rz*speed*dt;
+  }
 }
 
 /* =========================================================
-   BUTTONS
+   HUD
 ========================================================= */
 
-document
-.getElementById("createBtn")
-.addEventListener(
-  "click",
-  createRoom
-);
+function updateHUD(){
 
-document
-.getElementById("joinBtn")
-.addEventListener(
-  "click",
-  joinRoom
-);
+  waveEl.textContent=wave;
+  killsEl.textContent=kills;
+  scoreEl.textContent=score;
 
-document
-.getElementById("soloBtn")
-.addEventListener(
-  "click",
-  () => {
+  const displayStars =
+    stars>=999 ? "999+" : stars;
 
-    playerName =
-      playerNameInput.value.trim()
-      || "Player";
+  starsEl.textContent=
+    displayStars;
 
-    saveProgress();
+  rankEl.textContent=
+    getRank(stars);
 
-    currentRoomId=null;
-    currentRoomCode=null;
-    isHost=true;
+  ammoEl.textContent=
+    `${ammo} / ${maxAmmo}`;
 
-    startGame();
-  }
-);
+  hpFill.style.width=
+    `${Math.max(0,hp)}%`;
 
-document
-.getElementById("startBtn")
-.addEventListener(
-  "click",
-  startRoomGame
-);
+  hpText.textContent=
+    `HP ${Math.ceil(hp)} / ${maxHp}`;
 
-document
-.getElementById("leaveRoomBtn")
-.addEventListener(
-  "click",
-  leaveRoom
-);
+  missionCount.textContent=
+    `${Math.min(kills,missionTarget)} / ${missionTarget}`;
 
-document
-.getElementById("againBtn")
-.addEventListener(
-  "click",
-  () => {
+  timerEl.textContent=
+    formatTime(timeLeft);
+}
 
-    gameover.classList.add(
-      "hidden"
-    );
+function formatTime(sec){
 
-    startGame();
-  }
-);
+  sec=Math.max(0,Math.floor(sec));
 
-document
-.getElementById("homeBtn")
-.addEventListener(
-  "click",
-  () => {
+  const m=
+    String(Math.floor(sec/60))
+    .padStart(2,"0");
 
-    gameover.classList.add(
-      "hidden"
-    );
+  const s=
+    String(sec%60)
+    .padStart(2,"0");
 
-    menu.classList.remove(
-      "hidden"
-    );
-  }
-);
+  return `${m}:${s}`;
+}
 
-document
-.getElementById("fire")
-.addEventListener(
-  "touchstart",
-  e => {
+let noticeTimer;
 
-    e.preventDefault();
-    shoot();
-  },
-  {passive:false}
-);
+function showNotice(text){
 
-document
-.getElementById("fire")
-.addEventListener(
-  "click",
-  shoot
-);
+  notice.textContent=text;
+  notice.style.opacity="1";
 
-document
-.getElementById("reload")
-.addEventListener(
-  "click",
-  reload
-);
+  clearTimeout(noticeTimer);
 
-document
-.getElementById("skill")
-.addEventListener(
-  "click",
-  useRage
-);
-
-document
-.getElementById("menuBtn")
-.addEventListener(
-  "click",
-  () => {
-
-    if(gameRunning){
-
-      gameRunning=false;
-
-      hud.classList.add(
-        "hidden"
-      );
-
-      menu.classList.remove(
-        "hidden"
-      );
-    }
-  }
-);
+  noticeTimer=setTimeout(()=>{
+    notice.style.opacity="0";
+  },900);
+}
 
 /* =========================================================
-   LEAVE ROOM
+   TIMER
 ========================================================= */
 
-async function leaveRoom(){
+let lastTimer=performance.now();
+
+function updateTimer(){
+
+  if(!gameRunning)
+    return;
+
+  const now=performance.now();
+
+  if(now-lastTimer>=1000){
+
+    lastTimer=now;
+
+    timeLeft--;
+
+    if(timeLeft<0)
+      timeLeft=0;
+
+    updateHUD();
+
+    if(timeLeft<=0){
+
+      if(kills>=missionTarget)
+        endGame(true);
+      else
+        endGame(false);
+    }
+  }
+}
+
+/* =========================================================
+   WIN CHECK
+========================================================= */
+
+function checkWin(){
+
+  if(!gameRunning)
+    return;
+
+  if(kills>=missionTarget){
+
+    endGame(true);
+  }
+}
+
+/* =========================================================
+   END GAME
+========================================================= */
+
+let resultSaved=false;
+
+async function endGame(win){
+
+  if(!gameRunning)
+    return;
 
   gameRunning=false;
 
-  if(roomChannel){
+  if(win){
 
-    await supabase
-      .removeChannel(
-        roomChannel
-      );
+    stars++;
 
-    roomChannel=null;
+    match++;
+
+    saveProgress();
+
+    resultSaved=false;
+
+    document.getElementById(
+      "resultTitle"
+    ).textContent=
+      "🏆 CHIẾN THẮNG!";
+
+    document.getElementById(
+      "resultText"
+    ).innerHTML=
+      `Nhiệm vụ hoàn thành!<br>
+       ⭐ +1 sao<br>
+       🏆 ${getRank(stars)}<br>
+       ☠️ ${kills} kills<br>
+       💰 ${score} điểm`;
+
+  }else{
+
+    document.getElementById(
+      "resultTitle"
+    ).textContent=
+      "💀 THẤT BẠI";
+
+    document.getElementById(
+      "resultText"
+    ).innerHTML=
+      `Bạn chưa hoàn thành nhiệm vụ.<br>
+       ☠️ ${kills} / ${missionTarget} kills<br>
+       ⭐ ${stars>=999?"999+":stars} sao`;
   }
 
-  if(currentRoomId){
+  gameOver.style.display="flex";
 
-    await supabase
-      .from("room_players")
-      .delete()
-      .eq(
-        "room_id",
-        currentRoomId
-      )
-      .eq(
-        "player_id",
-        playerId
-      );
-  }
+  updateHUD();
 
-  currentRoomId=null;
-  currentRoomCode=null;
-
-  roomPanel.classList.add(
-    "hidden"
-  );
-
-  hud.classList.add(
-    "hidden"
-  );
-
-  menu.classList.remove(
-    "hidden"
-  );
+  await saveScore();
 }
 
 /* =========================================================
-   NETWORK PLAYER UPDATE
+   RESET MATCH
 ========================================================= */
 
-let playerNetworkTimer=0;
+function resetGame(){
 
-async function networkPlayerTick(dt){
+  for(const z of zombies)
+    scene.remove(z);
 
-  if(
-    !gameRunning ||
-    !currentRoomId
-  )
-    return;
+  zombies.length=0;
 
-  playerNetworkTimer+=dt;
+  hp=100;
+  ammo=maxAmmo;
+  reloading=false;
 
-  if(
-    playerNetworkTimer<.25
-  )
-    return;
+  kills=0;
+  score=0;
+  wave=1;
 
-  playerNetworkTimer=0;
+  timeLeft=180;
 
-  updateOwnPlayer();
+  missionTarget=
+    getMissionTarget(match);
+
+  gameRunning=true;
+
+  gameOver.style.display="none";
+
+  spawnWave();
+
+  updateHUD();
 }
 
 /* =========================================================
-   ANIMATION
+   SUPABASE LEADERBOARD
 ========================================================= */
+
+async function saveScore(){
+
+  if(resultSaved)
+    return;
+
+  resultSaved=true;
+
+  try{
+
+    await fetch(
+      SUPABASE_URL+
+      "/rest/v1/scores",
+      {
+        method:"POST",
+
+        headers:{
+          "apikey":SUPABASE_KEY,
+          "Authorization":
+            "Bearer "+SUPABASE_KEY,
+          "Content-Type":
+            "application/json",
+          "Prefer":
+            "return=minimal"
+        },
+
+        body:JSON.stringify({
+          name:playerName,
+          score:score,
+          kills:kills,
+          wave:wave
+        })
+      }
+    );
+
+  }catch(e){
+
+    console.log(
+      "Không lưu được leaderboard",
+      e
+    );
+  }
+}
+
+async function loadLeaderboard(){
+
+  leaderboard.style.display="block";
+
+  leaderboard.innerHTML=
+    "⏳ Đang tải TOP 100...";
+
+  try{
+
+    const url =
+      SUPABASE_URL+
+      "/rest/v1/scores"+
+      "?select=name,score,kills,wave"+
+      "&order=score.desc"+
+      "&limit=100";
+
+    const res =
+      await fetch(
+        url,
+        {
+          headers:{
+            "apikey":SUPABASE_KEY,
+            "Authorization":
+              "Bearer "+SUPABASE_KEY
+          }
+        }
+      );
+
+    const data =
+      await res.json();
+
+    if(!Array.isArray(data)){
+
+      leaderboard.innerHTML=
+        "Không tải được bảng xếp hạng.";
+
+      return;
+    }
+
+    leaderboard.innerHTML="";
+
+    data.forEach(
+      (p,i)=>{
+
+        const row =
+        document.createElement("div");
+
+        row.className="rankrow";
+
+        row.innerHTML=
+          `<span>
+             #${i+1} ${escapeHtml(p.name)}
+           </span>
+           <span>
+             ${p.score} điểm
+           </span>`;
+
+        leaderboard.appendChild(row);
+      }
+    );
+
+    if(data.length===0){
+
+      leaderboard.innerHTML=
+        "Chưa có người chơi.";
+    }
+
+  }catch(e){
+
+    leaderboard.innerHTML=
+      "Lỗi kết nối Supabase.";
+  }
+}
+
+function escapeHtml(text){
+
+  return String(text)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+/* =========================================================
+   MENU
+========================================================= */
+
+document.getElementById(
+  "menuBtn"
+).addEventListener(
+  "click",
+  ()=>{
+
+    menu.style.display="flex";
+
+    document.getElementById(
+      "nameInput"
+    ).value=playerName;
+  }
+);
+
+document.getElementById(
+  "closeMenu"
+).addEventListener(
+  "click",
+  ()=>{
+
+    menu.style.display="none";
+  }
+);
+
+document.getElementById(
+  "saveName"
+).addEventListener(
+  "click",
+  ()=>{
+
+    const value =
+      document.getElementById(
+        "nameInput"
+      ).value.trim();
+
+    if(value)
+      playerName=value;
+
+    saveProgress();
+
+    updateHUD();
+
+    showNotice(
+      "✅ Đã lưu tên"
+    );
+  }
+);
+
+document.getElementById(
+  "showBoard"
+).addEventListener(
+  "click",
+  loadLeaderboard
+);
+
+/* =========================================================
+   GAME OVER BUTTONS
+========================================================= */
+
+document.getElementById(
+  "nextMatch"
+).addEventListener(
+  "click",
+  ()=>{
+    resetGame();
+  }
+);
+
+document.getElementById(
+  "retry"
+).addEventListener(
+  "click",
+  ()=>{
+    resetGame();
+  }
+);
+
+document.getElementById(
+  "resultMenu"
+).addEventListener(
+  "click",
+  ()=>{
+
+    gameOver.style.display="none";
+    menu.style.display="flex";
+
+    document.getElementById(
+      "nameInput"
+    ).value=playerName;
+  }
+);
+
+/* =========================================================
+   GAME LOOP
+========================================================= */
+
+let last=performance.now();
 
 function animate(){
 
-  requestAnimationFrame(
-    animate
-  );
+  requestAnimationFrame(animate);
 
-  const dt =
+  const now=performance.now();
+
+  const dt=
     Math.min(
-      clock.getDelta(),
+      (now-last)/1000,
       .05
     );
 
-  updateGame(dt);
-  updateTimer(dt);
-  networkPlayerTick(dt);
+  last=now;
+
+  if(gameRunning){
+
+    updatePlayer(dt);
+
+    updateZombies(dt);
+
+    findTarget();
+
+    updateTimer();
+
+    checkWin();
+
+    if(gunKickTime>0){
+
+      gunKickTime-=dt;
+
+      if(gunKickTime<=0)
+        gun.position.z=-.65;
+    }
+
+  }
+
+  updateCamera();
 
   renderer.render(
     scene,
@@ -3509,57 +2312,38 @@ function animate(){
    RESIZE
 ========================================================= */
 
-function resize(){
+addEventListener(
+  "resize",
+  ()=>{
+    camera.aspect=
+      innerWidth/innerHeight;
 
-  camera.aspect =
-    innerWidth/
-    innerHeight;
+    camera.updateProjectionMatrix();
 
-  camera.updateProjectionMatrix();
-
-  renderer.setSize(
-    innerWidth,
-    innerHeight
-  );
-}
+    renderer.setSize(
+      innerWidth,
+      innerHeight
+    );
+  }
+);
 
 /* =========================================================
-   INITIALIZE
+   START
 ========================================================= */
-
-init3D();
 
 setTimeout(()=>{
 
-  loading.classList.add(
-    "hidden"
-  );
+  loading.style.display="none";
 
-  menu.classList.remove(
-    "hidden"
-  );
+  spawnWave();
 
-  updateRankUI();
+  updateHUD();
+
+  animate();
 
 },700);
-
-/* =========================================================
-   AUTO REFRESH ROOM
-========================================================= */
-
-setInterval(
-  ()=>{
-    if(
-      currentRoomId &&
-      !gameRunning
-    ){
-      refreshRoomPlayers();
-    }
-  },
-  2000
-);
 
 </script>
 
 </body>
-  </html>
+      </html>
